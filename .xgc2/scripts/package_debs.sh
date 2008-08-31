@@ -323,7 +323,7 @@ build_meta_deb() {
   write_control \
     "${meta_root}" \
     "${meta_pkg}" \
-    "${fast_pkg} (= ${VERSION}), ${swarm_pkg} (= ${VERSION}), ${point_lio_pkg} (= ${VERSION}), ${lio_sam_pkg} (= ${VERSION}), ${voxel_slam_pkg} (= ${VERSION}), ${voxelslam_pointcloud2_pkg} (= ${VERSION})" \
+    "${fast_pkg} (>= 1.1.0-10), ${swarm_pkg} (>= 1.1.0-10), ${point_lio_pkg} (>= 1.1.0-10), ${lio_sam_pkg} (>= 1.1.0-10), ${voxel_slam_pkg} (>= 1.1.0-10), ${voxelslam_pointcloud2_pkg} (>= 1.1.0-10)" \
     "XGC2 ROS1 SLAM package set"
   fakeroot dpkg-deb --build "${meta_root}" "${OUTPUT_DIR}/${meta_pkg}_${VERSION}_${ARCH}.deb" >/dev/null
 }
