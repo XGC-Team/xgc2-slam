@@ -35,6 +35,7 @@ include_directories(
 add_executable(udp_online
         src/udp_online.cpp
         )
+add_dependencies(udp_online ${catkin_EXPORTED_TARGETS})
 target_link_libraries(udp_online
         ${catkin_LIBRARIES}
         )

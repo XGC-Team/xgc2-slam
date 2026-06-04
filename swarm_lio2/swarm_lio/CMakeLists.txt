@@ -93,6 +93,7 @@ add_executable(swarm_lio
         src/preprocess.cpp
         src/MultiUAV.cpp
         )
+add_dependencies(swarm_lio ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(swarm_lio
         ${catkin_LIBRARIES}
