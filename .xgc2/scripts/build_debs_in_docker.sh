@@ -8,9 +8,14 @@ DOCKER_IMAGE="${DOCKER_IMAGE:-ros:noetic-ros-base-focal}"
 WORK_DIR="${WORK_DIR:-${REPO_ROOT}/.work/docker}"
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/debs}"
 INSTALL_CHECK="${INSTALL_CHECK:-true}"
+PACKAGE_GROUP="${PACKAGE_GROUP:-all}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --package-group)
+      PACKAGE_GROUP="$2"
+      shift 2
+      ;;
     --image)
       DOCKER_IMAGE="$2"
       shift 2
@@ -41,6 +46,7 @@ docker run --rm \
   --network host \
   -e DEBIAN_FRONTEND=noninteractive \
   -e INSTALL_CHECK="${INSTALL_CHECK}" \
+  -e PACKAGE_GROUP="${PACKAGE_GROUP}" \
   -v "${REPO_ROOT}:/workspace/slam:ro" \
   -v "${WORK_DIR}:/workspace/work" \
   -v "${OUTPUT_DIR}:/workspace/out" \
@@ -84,11 +90,29 @@ docker run --rm \
 
     rm -rf /workspace/work/src /workspace/work/build /workspace/work/devel /workspace/work/install-root
     mkdir -p /workspace/work/src
-    rsync -a --delete /workspace/slam/fast_lio/ /workspace/work/src/fast_lio/
-    rsync -a --delete /workspace/slam/swarm_lio2/livox_ros_driver_mars/ /workspace/work/src/livox_ros_driver_mars/
-    rsync -a --delete /workspace/slam/swarm_lio2/swarm_msgs/ /workspace/work/src/swarm_msgs/
-    rsync -a --delete /workspace/slam/swarm_lio2/udp_bridge/ /workspace/work/src/udp_bridge/
-    rsync -a --delete /workspace/slam/swarm_lio2/swarm_lio/ /workspace/work/src/swarm_lio/
+    case "${PACKAGE_GROUP}" in
+      all)
+        rsync -a --delete /workspace/slam/fast_lio/ /workspace/work/src/fast_lio/
+        rsync -a --delete /workspace/slam/swarm_lio2/livox_ros_driver_mars/ /workspace/work/src/livox_ros_driver_mars/
+        rsync -a --delete /workspace/slam/swarm_lio2/swarm_msgs/ /workspace/work/src/swarm_msgs/
+        rsync -a --delete /workspace/slam/swarm_lio2/udp_bridge/ /workspace/work/src/udp_bridge/
+        rsync -a --delete /workspace/slam/swarm_lio2/swarm_lio/ /workspace/work/src/swarm_lio/
+        ;;
+      fast-lio2)
+        rsync -a --delete /workspace/slam/fast_lio/ /workspace/work/src/fast_lio/
+        rsync -a --delete /workspace/slam/swarm_lio2/livox_ros_driver_mars/ /workspace/work/src/livox_ros_driver_mars/
+        ;;
+      swarm-lio2)
+        rsync -a --delete /workspace/slam/swarm_lio2/livox_ros_driver_mars/ /workspace/work/src/livox_ros_driver_mars/
+        rsync -a --delete /workspace/slam/swarm_lio2/swarm_msgs/ /workspace/work/src/swarm_msgs/
+        rsync -a --delete /workspace/slam/swarm_lio2/udp_bridge/ /workspace/work/src/udp_bridge/
+        rsync -a --delete /workspace/slam/swarm_lio2/swarm_lio/ /workspace/work/src/swarm_lio/
+        ;;
+      *)
+        echo "unknown package group: ${PACKAGE_GROUP}" >&2
+        exit 1
+        ;;
+    esac
 
     cd /workspace/work
     source /opt/ros/noetic/setup.bash
@@ -106,6 +130,7 @@ docker run --rm \
       -DCMAKE_C_FLAGS_RELEASE="-O3 -DNDEBUG"
 
     /workspace/slam/.xgc2/scripts/package_debs.sh \
+      --package-group "${PACKAGE_GROUP}" \
       --install-root /workspace/work/install-root \
       --output-dir /workspace/out
 

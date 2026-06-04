@@ -22,14 +22,22 @@ jobs:
         run: .xgc2/scripts/check_package_compliance.sh
 
   deb-build:
-    name: Build debs (${{ matrix.arch }})
+    name: Build ${{ matrix.package-group }} (${{ matrix.arch }})
     strategy:
       fail-fast: false
       matrix:
         include:
-          - arch: amd64
+          - package-group: fast-lio2
+            arch: amd64
             runner: ubuntu-latest
-          - arch: arm64
+          - package-group: fast-lio2
+            arch: arm64
+            runner: ubuntu-24.04-arm
+          - package-group: swarm-lio2
+            arch: amd64
+            runner: ubuntu-latest
+          - package-group: swarm-lio2
+            arch: arm64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
 
@@ -39,14 +47,15 @@ jobs:
       - name: Build deb packages in Docker
         run: |
           .xgc2/scripts/build_debs_in_docker.sh \
-            --work-dir "$RUNNER_TEMP/slam-${{ matrix.arch }}" \
+            --package-group "${{ matrix.package-group }}" \
+            --work-dir "$RUNNER_TEMP/slam-${{ matrix.package-group }}-${{ matrix.arch }}" \
             --output-dir "$GITHUB_WORKSPACE/debs" \
             --skip-install-check
 
       - name: Upload deb artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: xgc2-slam-debs-${{ matrix.arch }}
+          name: xgc2-slam-debs-${{ matrix.package-group }}-${{ matrix.arch }}
           path: debs/*.deb
 
   publish-apt:

@@ -5,9 +5,14 @@ INSTALL_ROOT=""
 OUTPUT_DIR=""
 ROS_DISTRO="${ROS_DISTRO:-noetic}"
 VERSION="${PACKAGE_VERSION:-1.0.0-1}"
+PACKAGE_GROUP="${PACKAGE_GROUP:-all}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --package-group)
+      PACKAGE_GROUP="$2"
+      shift 2
+      ;;
     --install-root)
       INSTALL_ROOT="$2"
       shift 2
@@ -109,44 +114,65 @@ meta_pkg="ros-noetic-xgc2-slam"
 ros_base_depends="ros-noetic-roscpp, ros-noetic-rospy, ros-noetic-std-msgs, ros-noetic-sensor-msgs, ros-noetic-geometry-msgs, ros-noetic-nav-msgs"
 lio_depends="${ros_base_depends}, ros-noetic-tf, ros-noetic-pcl-ros, ros-noetic-eigen-conversions, libeigen3-dev, python3, python3-dev"
 
-build_ros_package_deb \
-  "${livox_pkg}" \
-  "livox_ros_driver" \
-  "ros-noetic-roscpp, ros-noetic-rospy, ros-noetic-std-msgs, ros-noetic-sensor-msgs, ros-noetic-message-runtime, ros-noetic-rosbag, ros-noetic-pcl-ros, libapr1" \
-  "XGC2 Livox ROS driver support package"
+build_fast_lio2_debs() {
+  build_ros_package_deb \
+    "${livox_pkg}" \
+    "livox_ros_driver" \
+    "ros-noetic-roscpp, ros-noetic-rospy, ros-noetic-std-msgs, ros-noetic-sensor-msgs, ros-noetic-message-runtime, ros-noetic-rosbag, ros-noetic-pcl-ros, libapr1" \
+    "XGC2 Livox ROS driver support package"
 
-build_ros_package_deb \
-  "${fast_pkg}" \
-  "fast_lio" \
-  "${lio_depends}, ros-noetic-message-runtime, ${livox_pkg} (= ${VERSION})" \
-  "XGC2 FAST-LIO2 LiDAR-inertial odometry package"
+  build_ros_package_deb \
+    "${fast_pkg}" \
+    "fast_lio" \
+    "${lio_depends}, ros-noetic-message-runtime, ${livox_pkg} (= ${VERSION})" \
+    "XGC2 FAST-LIO2 LiDAR-inertial odometry package"
+}
 
-build_ros_package_deb \
-  "${swarm_msgs_pkg}" \
-  "swarm_msgs" \
-  "ros-noetic-message-runtime, ros-noetic-std-msgs, ros-noetic-sensor-msgs, ros-noetic-geometry-msgs, ros-noetic-nav-msgs" \
-  "XGC2 Swarm-LIO2 message package"
+build_swarm_lio2_debs() {
+  build_ros_package_deb \
+    "${swarm_msgs_pkg}" \
+    "swarm_msgs" \
+    "ros-noetic-message-runtime, ros-noetic-std-msgs, ros-noetic-sensor-msgs, ros-noetic-geometry-msgs, ros-noetic-nav-msgs" \
+    "XGC2 Swarm-LIO2 message package"
 
-build_ros_package_deb \
-  "${udp_pkg}" \
-  "udp_bridge" \
-  "${ros_base_depends}, ros-noetic-mavros-msgs, ros-noetic-roslib, ros-noetic-rosbag, ros-noetic-rosfmt, ${swarm_msgs_pkg} (= ${VERSION})" \
-  "XGC2 Swarm-LIO2 UDP bridge package"
+  build_ros_package_deb \
+    "${udp_pkg}" \
+    "udp_bridge" \
+    "${ros_base_depends}, ros-noetic-mavros-msgs, ros-noetic-roslib, ros-noetic-rosbag, ros-noetic-rosfmt, ${swarm_msgs_pkg} (= ${VERSION})" \
+    "XGC2 Swarm-LIO2 UDP bridge package"
 
-build_ros_package_deb \
-  "${swarm_pkg}" \
-  "swarm_lio" \
-  "${lio_depends}, ros-noetic-message-runtime, ros-noetic-gtsam, libtbb2, ${livox_pkg} (= ${VERSION}), ${swarm_msgs_pkg} (= ${VERSION}), ${udp_pkg} (= ${VERSION})" \
-  "XGC2 Swarm-LIO2 cooperative LiDAR-inertial odometry package"
+  build_ros_package_deb \
+    "${swarm_pkg}" \
+    "swarm_lio" \
+    "${lio_depends}, ros-noetic-message-runtime, ros-noetic-gtsam, libtbb2, ${livox_pkg} (= ${VERSION}), ${swarm_msgs_pkg} (= ${VERSION}), ${udp_pkg} (= ${VERSION})" \
+    "XGC2 Swarm-LIO2 cooperative LiDAR-inertial odometry package"
 
-meta_root="${BUILD_DIR}/${meta_pkg}"
-rm -rf "${meta_root}"
-mkdir -p "${meta_root}"
-write_control \
-  "${meta_root}" \
-  "${meta_pkg}" \
-  "${fast_pkg} (= ${VERSION}), ${swarm_pkg} (= ${VERSION})" \
-  "XGC2 ROS1 SLAM package set"
-fakeroot dpkg-deb --build "${meta_root}" "${OUTPUT_DIR}/${meta_pkg}_${VERSION}_${ARCH}.deb" >/dev/null
+  meta_root="${BUILD_DIR}/${meta_pkg}"
+  rm -rf "${meta_root}"
+  mkdir -p "${meta_root}"
+  write_control \
+    "${meta_root}" \
+    "${meta_pkg}" \
+    "${fast_pkg} (= ${VERSION}), ${swarm_pkg} (= ${VERSION})" \
+    "XGC2 ROS1 SLAM package set"
+  fakeroot dpkg-deb --build "${meta_root}" "${OUTPUT_DIR}/${meta_pkg}_${VERSION}_${ARCH}.deb" >/dev/null
+}
+
+case "${PACKAGE_GROUP}" in
+  all)
+    build_fast_lio2_debs
+    build_swarm_lio2_debs
+    ;;
+  fast-lio2)
+    build_fast_lio2_debs
+    ;;
+  swarm-lio2)
+    build_swarm_lio2_debs
+    ;;
+  *)
+    echo "unknown package group: ${PACKAGE_GROUP}" >&2
+    exit 1
+    ;;
+esac
 
 find "${OUTPUT_DIR}" -maxdepth 1 -type f -name '*.deb' -print | sort
