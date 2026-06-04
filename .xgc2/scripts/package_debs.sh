@@ -62,7 +62,7 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "${OUTPUT_DIR}"
-rm -f "${OUTPUT_DIR}"/*.deb
+rm -f "${OUTPUT_DIR}"/*_"${ARCH}".deb
 
 copy_path() {
   local src="$1"
