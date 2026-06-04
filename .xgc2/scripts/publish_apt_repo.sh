@@ -63,9 +63,9 @@ ssh_args=(
   -o "UserKnownHostsFile=${known_hosts_file}"
 )
 
-remote_command="publish '${APT_REPO_DISTRIBUTION}'"
+remote_command="publish ${APT_REPO_DISTRIBUTION}"
 if [[ -n "${APT_REPO_REMOTE_DIR}" ]]; then
-  remote_command="cd -- '${APT_REPO_REMOTE_DIR}' && publish '${APT_REPO_DISTRIBUTION}'"
+  remote_command="cd -- ${APT_REPO_REMOTE_DIR} && publish ${APT_REPO_DISTRIBUTION}"
 fi
 
 tar -C "${DEB_DIR}" -cf - . |
