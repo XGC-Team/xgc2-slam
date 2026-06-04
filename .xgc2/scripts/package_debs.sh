@@ -107,6 +107,83 @@ copy_ros_package_paths() {
   copy_path "${PREFIX_ROOT}/share/roseus/ros/${ros_pkg}" "${dst_root}"
 }
 
+message_headers_for_package() {
+  local ros_pkg="$1"
+
+  case "${ros_pkg}" in
+    fast_lio)
+      printf '%s\n' Pose6D.h
+      ;;
+    livox_ros_driver)
+      printf '%s\n' CustomMsg.h CustomPoint.h
+      ;;
+    swarm_lio)
+      printf '%s\n' Pose6D.h States.h
+      ;;
+    swarm_msgs)
+      printf '%s\n' \
+        ConnectedTeammateList.h \
+        GlobalExtrinsic.h \
+        GlobalExtrinsicStatus.h \
+        ObserveTeammate.h \
+        QuadStatePub.h \
+        SpatialTemporalOffset.h \
+        SpatialTemporalOffsetStatus.h \
+        TeamStatus.h \
+        TeammateInfo.h
+      ;;
+  esac
+}
+
+prune_installed_package_payload() {
+  local pkg_root="$1"
+  local ros_pkg="$2"
+  local share_dir="${pkg_root}${PREFIX}/share/${ros_pkg}"
+  local include_dir="${pkg_root}${PREFIX}/include/${ros_pkg}"
+  local keep_dir=""
+  local header=""
+
+  if [[ -d "${share_dir}" ]]; then
+    rm -rf \
+      "${share_dir}/doc" \
+      "${share_dir}/docs" \
+      "${share_dir}/image" \
+      "${share_dir}/images" \
+      "${share_dir}/media" \
+      "${share_dir}/picture" \
+      "${share_dir}/pictures"
+
+    find "${share_dir}" -type f \( \
+      -iname '*.bmp' -o \
+      -iname '*.gif' -o \
+      -iname '*.jpeg' -o \
+      -iname '*.jpg' -o \
+      -iname '*.md' -o \
+      -iname '*.pdf' -o \
+      -iname '*.png' -o \
+      -iname '*.svg' \
+    \) -delete
+
+    find "${share_dir}" -depth -type d -empty -delete
+  fi
+
+  if [[ -d "${include_dir}" ]]; then
+    keep_dir="$(mktemp -d)"
+    while IFS= read -r header; do
+      if [[ -f "${include_dir}/${header}" ]]; then
+        cp -a "${include_dir}/${header}" "${keep_dir}/${header}"
+      fi
+    done < <(message_headers_for_package "${ros_pkg}")
+
+    rm -rf "${include_dir}"
+    if compgen -G "${keep_dir}/*.h" >/dev/null; then
+      mkdir -p "${include_dir}"
+      cp -a "${keep_dir}/." "${include_dir}/"
+    fi
+    rm -rf "${keep_dir}"
+  fi
+}
+
 build_ros_package_deb() {
   local package="$1"
   local ros_pkg="$2"
@@ -118,6 +195,7 @@ build_ros_package_deb() {
   mkdir -p "${pkg_root}"
 
   copy_ros_package_paths "${ros_pkg}" "${pkg_root}"
+  prune_installed_package_payload "${pkg_root}" "${ros_pkg}"
   write_control "${pkg_root}" "${package}" "${depends}" "${description}"
   fakeroot dpkg-deb --build "${pkg_root}" "${OUTPUT_DIR}/${package}_${VERSION}_${ARCH}.deb" >/dev/null
 }

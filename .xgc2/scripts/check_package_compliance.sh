@@ -36,5 +36,7 @@ grep -q "id: xgc2-slam" "${REPO_ROOT}/.xgc2/product.yml"
 grep -q "ros-noetic-xgc2-fast-lio2" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 grep -q "ros-noetic-xgc2-swarm-lio2" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 grep -q "ros-noetic-xgc2-slam" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
+grep -q "prune_installed_package_payload" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
+grep -q "message_headers_for_package" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 
 echo "Package compliance check passed"
