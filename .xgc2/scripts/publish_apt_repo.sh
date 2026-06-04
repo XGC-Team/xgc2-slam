@@ -6,7 +6,6 @@ APT_REPO_HOST="${APT_REPO_HOST:-}"
 APT_REPO_PORT="${APT_REPO_PORT:-22}"
 APT_REPO_USER="${APT_REPO_USER:-aptdeploy}"
 APT_REPO_DISTRIBUTION="${APT_REPO_DISTRIBUTION:-focal}"
-APT_REPO_REMOTE_DIR="${APT_REPO_REMOTE_DIR:-}"
 APT_REPO_SSH_KEY="${APT_REPO_SSH_KEY:-}"
 APT_REPO_KNOWN_HOSTS="${APT_REPO_KNOWN_HOSTS:-}"
 
@@ -33,16 +32,6 @@ if ! compgen -G "${DEB_DIR}/*.deb" >/dev/null; then
   exit 1
 fi
 
-if [[ ! "${APT_REPO_DISTRIBUTION}" =~ ^[A-Za-z0-9._+-]+$ ]]; then
-  echo "unsafe APT_REPO_DISTRIBUTION: ${APT_REPO_DISTRIBUTION}" >&2
-  exit 1
-fi
-
-if [[ -n "${APT_REPO_REMOTE_DIR}" && ! "${APT_REPO_REMOTE_DIR}" =~ ^[A-Za-z0-9._+/@=-]+$ ]]; then
-  echo "unsafe APT_REPO_REMOTE_DIR: ${APT_REPO_REMOTE_DIR}" >&2
-  exit 1
-fi
-
 tmp_dir="$(mktemp -d)"
 cleanup() {
   rm -rf "${tmp_dir}"
@@ -63,12 +52,7 @@ ssh_args=(
   -o "UserKnownHostsFile=${known_hosts_file}"
 )
 
-remote_command="publish ${APT_REPO_DISTRIBUTION}"
-if [[ -n "${APT_REPO_REMOTE_DIR}" ]]; then
-  remote_command="cd -- ${APT_REPO_REMOTE_DIR} && publish ${APT_REPO_DISTRIBUTION}"
-fi
-
 tar -C "${DEB_DIR}" -cf - . |
-  ssh "${ssh_args[@]}" "${APT_REPO_USER}@${APT_REPO_HOST}" "${remote_command}"
+  ssh "${ssh_args[@]}" "${APT_REPO_USER}@${APT_REPO_HOST}" "publish ${APT_REPO_DISTRIBUTION}"
 
 echo "published ${DEB_DIR}/*.deb to ${APT_REPO_HOST}:${APT_REPO_PORT} distribution ${APT_REPO_DISTRIBUTION}"

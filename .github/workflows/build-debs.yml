@@ -102,7 +102,6 @@ jobs:
       APT_REPO_PORT: ${{ secrets.APT_REPO_PORT }}
       APT_REPO_SSH_KEY: ${{ secrets.APT_REPO_SSH_KEY }}
       APT_REPO_KNOWN_HOSTS: ${{ secrets.APT_REPO_KNOWN_HOSTS }}
-      APT_REPO_REMOTE_DIR: ${{ secrets.APT_REPO_REMOTE_DIR }}
     steps:
       - uses: actions/checkout@v4
 
