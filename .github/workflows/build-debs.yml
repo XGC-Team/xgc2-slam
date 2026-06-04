@@ -1,0 +1,66 @@
+name: build-debs
+
+on:
+  push:
+    branches:
+      - noetic
+  workflow_dispatch:
+
+jobs:
+  package-compliance:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check package metadata and packaging consistency
+        run: .xgc2/scripts/check_package_compliance.sh
+
+  deb-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build deb packages in Docker
+        run: |
+          .xgc2/scripts/build_debs_in_docker.sh \
+            --work-dir "$RUNNER_TEMP/slam-${{ matrix.arch }}" \
+            --output-dir "$GITHUB_WORKSPACE/debs" \
+            --skip-install-check
+
+      - name: Upload deb artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: xgc2-slam-debs-${{ matrix.arch }}
+          path: debs/*.deb
+
+  publish-apt:
+    runs-on: ubuntu-latest
+    needs: deb-build
+    env:
+      APT_REPO_HOST: ${{ secrets.APT_REPO_HOST }}
+      APT_REPO_PORT: ${{ secrets.APT_REPO_PORT }}
+      APT_REPO_SSH_KEY: ${{ secrets.APT_REPO_SSH_KEY }}
+      APT_REPO_KNOWN_HOSTS: ${{ secrets.APT_REPO_KNOWN_HOSTS }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download deb artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: xgc2-slam-debs-*
+          path: debs
+          merge-multiple: true
+
+      - name: Publish to self-hosted APT repository
+        if: ${{ env.APT_REPO_HOST != '' && env.APT_REPO_PORT != '' && env.APT_REPO_SSH_KEY != '' && env.APT_REPO_KNOWN_HOSTS != '' }}
+        run: .xgc2/scripts/publish_apt_repo.sh --deb-dir debs

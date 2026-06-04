@@ -1,0 +1,49 @@
+schema: xgc2.product.v1
+id: xgc2-slam
+name: XGC2 SLAM
+kind: ros1-apt
+summary: ROS1 SLAM packages including FAST-LIO2 and Swarm-LIO2.
+
+ros:
+  distro: noetic
+  packages:
+    - livox_ros_driver
+    - fast_lio
+    - swarm_msgs
+    - udp_bridge
+    - swarm_lio
+
+apt:
+  distribution: focal
+  install:
+    - ros-noetic-xgc2-slam
+  packages:
+    - ros-noetic-xgc2-slam
+    - ros-noetic-xgc2-fast-lio2
+    - ros-noetic-xgc2-swarm-lio2
+    - ros-noetic-xgc2-livox-ros-driver
+    - ros-noetic-xgc2-swarm-msgs
+    - ros-noetic-xgc2-udp-bridge
+  depends:
+    - ros-noetic-xgc2-fast-lio2
+    - ros-noetic-xgc2-swarm-lio2
+
+usage:
+  install: |
+    sudo apt update
+    sudo apt install ros-noetic-xgc2-slam
+  smoke_test: |
+    rospack find fast_lio
+    rospack find swarm_lio
+
+ownership:
+  paths:
+    - /opt/ros/noetic/share/fast_lio
+    - /opt/ros/noetic/lib/fast_lio
+    - /opt/ros/noetic/share/swarm_lio
+    - /opt/ros/noetic/lib/swarm_lio
+    - /opt/ros/noetic/share/livox_ros_driver
+    - /opt/ros/noetic/lib/livox_ros_driver
+    - /opt/ros/noetic/share/swarm_msgs
+    - /opt/ros/noetic/share/udp_bridge
+    - /opt/ros/noetic/lib/udp_bridge
