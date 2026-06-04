@@ -6,6 +6,7 @@ APT_REPO_HOST="${APT_REPO_HOST:-}"
 APT_REPO_PORT="${APT_REPO_PORT:-22}"
 APT_REPO_USER="${APT_REPO_USER:-aptdeploy}"
 APT_REPO_DISTRIBUTION="${APT_REPO_DISTRIBUTION:-focal}"
+APT_REPO_REMOTE_DIR="${APT_REPO_REMOTE_DIR:-}"
 APT_REPO_SSH_KEY="${APT_REPO_SSH_KEY:-}"
 APT_REPO_KNOWN_HOSTS="${APT_REPO_KNOWN_HOSTS:-}"
 
@@ -23,8 +24,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "${APT_REPO_HOST}" || -z "${APT_REPO_SSH_KEY}" || -z "${APT_REPO_KNOWN_HOSTS}" ]]; then
-  echo "APT_REPO_HOST, APT_REPO_SSH_KEY and APT_REPO_KNOWN_HOSTS are required" >&2
-  exit 1
+  echo "APT publish skipped: APT_REPO_HOST, APT_REPO_SSH_KEY, or APT_REPO_KNOWN_HOSTS is not configured."
+  exit 0
 fi
 
 if ! compgen -G "${DEB_DIR}/*.deb" >/dev/null; then
@@ -52,7 +53,12 @@ ssh_args=(
   -o "UserKnownHostsFile=${known_hosts_file}"
 )
 
+remote_command="$(printf 'publish %q' "${APT_REPO_DISTRIBUTION}")"
+if [[ -n "${APT_REPO_REMOTE_DIR}" ]]; then
+  remote_command="$(printf 'cd -- %q && publish %q' "${APT_REPO_REMOTE_DIR}" "${APT_REPO_DISTRIBUTION}")"
+fi
+
 tar -C "${DEB_DIR}" -cf - . |
-  ssh "${ssh_args[@]}" "${APT_REPO_USER}@${APT_REPO_HOST}" "publish ${APT_REPO_DISTRIBUTION}"
+  ssh "${ssh_args[@]}" "${APT_REPO_USER}@${APT_REPO_HOST}" "bash -lc ${remote_command@Q}"
 
 echo "published ${DEB_DIR}/*.deb to ${APT_REPO_HOST}:${APT_REPO_PORT} distribution ${APT_REPO_DISTRIBUTION}"
