@@ -6,11 +6,16 @@ OUTPUT_DIR=""
 ROS_DISTRO="${ROS_DISTRO:-noetic}"
 VERSION="${PACKAGE_VERSION:-1.0.0-1}"
 PACKAGE_GROUP="${PACKAGE_GROUP:-all}"
+ARCH="$(dpkg --print-architecture)"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --package-group)
       PACKAGE_GROUP="$2"
+      shift 2
+      ;;
+    --arch)
+      ARCH="$2"
       shift 2
       ;;
     --install-root)
@@ -28,12 +33,25 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "${INSTALL_ROOT}" || -z "${OUTPUT_DIR}" ]]; then
-  echo "--install-root and --output-dir are required" >&2
+if [[ -z "${OUTPUT_DIR}" ]]; then
+  echo "--output-dir is required" >&2
   exit 1
 fi
 
-ARCH="$(dpkg --print-architecture)"
+if [[ "${PACKAGE_GROUP}" != "meta" && -z "${INSTALL_ROOT}" ]]; then
+  echo "--install-root is required unless --package-group meta is used" >&2
+  exit 1
+fi
+
+case "${ARCH}" in
+  amd64|arm64)
+    ;;
+  *)
+    echo "unsupported architecture: ${ARCH}" >&2
+    exit 1
+    ;;
+esac
+
 PREFIX="/opt/ros/${ROS_DISTRO}"
 PREFIX_ROOT="${INSTALL_ROOT}${PREFIX}"
 BUILD_DIR="$(mktemp -d)"
@@ -146,7 +164,9 @@ build_swarm_lio2_debs() {
     "swarm_lio" \
     "${lio_depends}, ros-noetic-message-runtime, ros-noetic-gtsam, libtbb2, ${livox_pkg} (= ${VERSION}), ${swarm_msgs_pkg} (= ${VERSION}), ${udp_pkg} (= ${VERSION})" \
     "XGC2 Swarm-LIO2 cooperative LiDAR-inertial odometry package"
+}
 
+build_meta_deb() {
   meta_root="${BUILD_DIR}/${meta_pkg}"
   rm -rf "${meta_root}"
   mkdir -p "${meta_root}"
@@ -162,12 +182,16 @@ case "${PACKAGE_GROUP}" in
   all)
     build_fast_lio2_debs
     build_swarm_lio2_debs
+    build_meta_deb
     ;;
   fast-lio2)
     build_fast_lio2_debs
     ;;
   swarm-lio2)
     build_swarm_lio2_debs
+    ;;
+  meta)
+    build_meta_deb
     ;;
   *)
     echo "unknown package group: ${PACKAGE_GROUP}" >&2
