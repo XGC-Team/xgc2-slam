@@ -142,27 +142,36 @@ prune_installed_package_payload() {
   local include_dir="${pkg_root}${PREFIX}/include/${ros_pkg}"
   local keep_dir=""
   local header=""
+  local asset=""
 
   if [[ -d "${share_dir}" ]]; then
     rm -rf \
       "${share_dir}/doc" \
-      "${share_dir}/docs" \
-      "${share_dir}/image" \
-      "${share_dir}/images" \
-      "${share_dir}/media" \
-      "${share_dir}/picture" \
-      "${share_dir}/pictures"
+      "${share_dir}/docs"
 
     find "${share_dir}" -type f \( \
-      -iname '*.bmp' -o \
-      -iname '*.gif' -o \
-      -iname '*.jpeg' -o \
-      -iname '*.jpg' -o \
       -iname '*.md' -o \
-      -iname '*.pdf' -o \
-      -iname '*.png' -o \
-      -iname '*.svg' \
+      -iname '*.pdf' \
     \) -delete
+
+    while IFS= read -r -d '' asset; do
+      case "${asset}" in
+        */mesh/*|*/meshes/*|*/model/*|*/models/*|*/texture/*|*/textures/*|*/urdf/*)
+          ;;
+        *)
+          rm -f "${asset}"
+          ;;
+      esac
+    done < <(
+      find "${share_dir}" -type f \( \
+        -iname '*.bmp' -o \
+        -iname '*.gif' -o \
+        -iname '*.jpeg' -o \
+        -iname '*.jpg' -o \
+        -iname '*.png' -o \
+        -iname '*.svg' \
+      \) -print0
+    )
 
     find "${share_dir}" -depth -type d -empty -delete
   fi
