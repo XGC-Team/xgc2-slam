@@ -96,6 +96,9 @@ docker run --rm \
       point-lio)
         apt_packages+=(libgoogle-glog-dev)
         ;;
+      swarm-lio2)
+        apt_packages+=(ros-noetic-gtsam)
+        ;;
       lio-sam)
         apt_packages+=(libopencv-dev ros-noetic-cv-bridge ros-noetic-gtsam)
         ;;
