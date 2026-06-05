@@ -56,6 +56,15 @@ docker run --rm \
 
     export DEBIAN_FRONTEND=noninteractive
     apt-get update
+    apt-get install -y --no-install-recommends ca-certificates curl
+    install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://xgc2.apt.xiaokang.ink/xgc2-archive-keyring.gpg \
+      -o /etc/apt/keyrings/xgc2-archive-keyring.gpg
+    chmod 0644 /etc/apt/keyrings/xgc2-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/xgc2-archive-keyring.gpg] https://xgc2.apt.xiaokang.ink focal main" \
+      > /etc/apt/sources.list.d/xgc2.list
+    apt-get update
+
     apt_packages=(
       build-essential \
       ca-certificates \
@@ -91,19 +100,22 @@ docker run --rm \
     )
     case "${PACKAGE_GROUP}" in
       all)
-        apt_packages+=(libgoogle-glog-dev libopencv-dev qtbase5-dev ros-noetic-cv-bridge ros-noetic-gtsam ros-noetic-rviz)
+        apt_packages+=(libgoogle-glog-dev libopencv-dev qtbase5-dev ros-noetic-cv-bridge ros-noetic-gtsam ros-noetic-livox-ros-driver ros-noetic-rviz)
+        ;;
+      fast-lio2)
+        apt_packages+=(ros-noetic-livox-ros-driver)
         ;;
       point-lio)
-        apt_packages+=(libgoogle-glog-dev)
+        apt_packages+=(libgoogle-glog-dev ros-noetic-livox-ros-driver)
         ;;
       swarm-lio2)
-        apt_packages+=(ros-noetic-gtsam)
+        apt_packages+=(ros-noetic-gtsam ros-noetic-livox-ros-driver)
         ;;
       lio-sam)
         apt_packages+=(libopencv-dev ros-noetic-cv-bridge ros-noetic-gtsam)
         ;;
       voxel-slam)
-        apt_packages+=(qtbase5-dev ros-noetic-gtsam ros-noetic-rviz)
+        apt_packages+=(qtbase5-dev ros-noetic-gtsam ros-noetic-livox-ros-driver ros-noetic-rviz)
         ;;
     esac
     apt-get install -y --no-install-recommends "${apt_packages[@]}"
@@ -113,7 +125,6 @@ docker run --rm \
     case "${PACKAGE_GROUP}" in
       all)
         rsync -a --delete /workspace/slam/fast_lio/ /workspace/work/src/fast_lio/
-        rsync -a --delete /workspace/slam/swarm_lio2/livox_ros_driver_mars/ /workspace/work/src/livox_ros_driver_mars/
         rsync -a --delete /workspace/slam/swarm_lio2/swarm_msgs/ /workspace/work/src/swarm_msgs/
         rsync -a --delete /workspace/slam/swarm_lio2/udp_bridge/ /workspace/work/src/udp_bridge/
         rsync -a --delete /workspace/slam/swarm_lio2/swarm_lio/ /workspace/work/src/swarm_lio/
@@ -124,23 +135,19 @@ docker run --rm \
         ;;
       fast-lio2)
         rsync -a --delete /workspace/slam/fast_lio/ /workspace/work/src/fast_lio/
-        rsync -a --delete /workspace/slam/swarm_lio2/livox_ros_driver_mars/ /workspace/work/src/livox_ros_driver_mars/
         ;;
       swarm-lio2)
-        rsync -a --delete /workspace/slam/swarm_lio2/livox_ros_driver_mars/ /workspace/work/src/livox_ros_driver_mars/
         rsync -a --delete /workspace/slam/swarm_lio2/swarm_msgs/ /workspace/work/src/swarm_msgs/
         rsync -a --delete /workspace/slam/swarm_lio2/udp_bridge/ /workspace/work/src/udp_bridge/
         rsync -a --delete /workspace/slam/swarm_lio2/swarm_lio/ /workspace/work/src/swarm_lio/
         ;;
       point-lio)
-        rsync -a --delete /workspace/slam/swarm_lio2/livox_ros_driver_mars/ /workspace/work/src/livox_ros_driver_mars/
         rsync -a --delete /workspace/slam/point_lio/ /workspace/work/src/point_lio/
         ;;
       lio-sam)
         rsync -a --delete /workspace/slam/lio_sam/ /workspace/work/src/lio_sam/
         ;;
       voxel-slam)
-        rsync -a --delete /workspace/slam/swarm_lio2/livox_ros_driver_mars/ /workspace/work/src/livox_ros_driver_mars/
         rsync -a --delete /workspace/slam/voxel_slam/voxel_slam/ /workspace/work/src/voxel_slam/
         rsync -a --delete /workspace/slam/voxel_slam/voxelslam_pointcloud2/ /workspace/work/src/voxelslam_pointcloud2/
         ;;

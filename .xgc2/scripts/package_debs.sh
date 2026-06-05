@@ -133,9 +133,6 @@ message_headers_for_package() {
     point_lio)
       printf '%s\n' LocalSensorExternalTrigger.h
       ;;
-    livox_ros_driver)
-      printf '%s\n' CustomMsg.h CustomPoint.h
-      ;;
     lio_sam)
       printf '%s\n' cloud_info.h save_map.h
       ;;
@@ -232,7 +229,7 @@ build_ros_package_deb() {
   fakeroot dpkg-deb --build "${pkg_root}" "${OUTPUT_DIR}/${package}_${VERSION}_${ARCH}.deb" >/dev/null
 }
 
-livox_pkg="ros-noetic-xgc2-livox-ros-driver"
+livox_dep="ros-noetic-livox-ros-driver"
 fast_pkg="ros-noetic-xgc2-fast-lio2"
 swarm_msgs_pkg="ros-noetic-xgc2-swarm-msgs"
 udp_pkg="ros-noetic-xgc2-udp-bridge"
@@ -249,27 +246,15 @@ gtsam_depends="ros-noetic-gtsam, libtbb2"
 opencv_depends="ros-noetic-cv-bridge, libopencv-dev"
 rviz_plugin_depends="ros-noetic-rviz, libqt5core5a, libqt5gui5, libqt5widgets5"
 
-build_livox_driver_deb() {
-  build_ros_package_deb \
-    "${livox_pkg}" \
-    "livox_ros_driver" \
-    "ros-noetic-roscpp, ros-noetic-rospy, ros-noetic-std-msgs, ros-noetic-sensor-msgs, ros-noetic-message-runtime, ros-noetic-rosbag, ros-noetic-pcl-ros, libapr1" \
-    "XGC2 Livox ROS driver support package"
-}
-
 build_fast_lio2_debs() {
-  build_livox_driver_deb
-
   build_ros_package_deb \
     "${fast_pkg}" \
     "fast_lio" \
-    "${lio_depends}, ros-noetic-message-runtime, ${livox_pkg} (= ${VERSION})" \
+    "${lio_depends}, ros-noetic-message-runtime, ${livox_dep}" \
     "XGC2 FAST-LIO2 LiDAR-inertial odometry package"
 }
 
 build_swarm_lio2_debs() {
-  build_livox_driver_deb
-
   build_ros_package_deb \
     "${swarm_msgs_pkg}" \
     "swarm_msgs" \
@@ -285,17 +270,15 @@ build_swarm_lio2_debs() {
   build_ros_package_deb \
     "${swarm_pkg}" \
     "swarm_lio" \
-    "${lio_depends}, ros-noetic-message-runtime, ros-noetic-gtsam, libtbb2, ${livox_pkg} (= ${VERSION}), ${swarm_msgs_pkg} (= ${VERSION}), ${udp_pkg} (= ${VERSION})" \
+    "${lio_depends}, ros-noetic-message-runtime, ros-noetic-gtsam, libtbb2, ${livox_dep}, ${swarm_msgs_pkg} (= ${VERSION}), ${udp_pkg} (= ${VERSION})" \
     "XGC2 Swarm-LIO2 cooperative LiDAR-inertial odometry package"
 }
 
 build_point_lio_debs() {
-  build_livox_driver_deb
-
   build_ros_package_deb \
     "${point_lio_pkg}" \
     "point_lio" \
-    "${lio_depends}, ros-noetic-message-runtime, libgoogle-glog0v5, ${livox_pkg} (= ${VERSION})" \
+    "${lio_depends}, ros-noetic-message-runtime, libgoogle-glog0v5, ${livox_dep}" \
     "XGC2 Point-LIO LiDAR-inertial odometry package"
 }
 
@@ -308,12 +291,10 @@ build_lio_sam_debs() {
 }
 
 build_voxel_slam_debs() {
-  build_livox_driver_deb
-
   build_ros_package_deb \
     "${voxel_slam_pkg}" \
     "voxel_slam" \
-    "${lio_depends}, ros-noetic-rosbag, ros-noetic-visualization-msgs, ${gtsam_depends}, ${livox_pkg} (= ${VERSION})" \
+    "${lio_depends}, ros-noetic-rosbag, ros-noetic-visualization-msgs, ${gtsam_depends}, ${livox_dep}" \
     "XGC2 Voxel-SLAM LiDAR mapping package"
 
   build_ros_package_deb \

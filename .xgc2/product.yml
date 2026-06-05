@@ -7,7 +7,6 @@ summary: ROS1 SLAM packages including FAST-LIO2, Swarm-LIO2, Point-LIO, LIO-SAM,
 ros:
   distro: noetic
   packages:
-    - livox_ros_driver
     - fast_lio
     - swarm_msgs
     - udp_bridge
@@ -25,7 +24,6 @@ apt:
     - ros-noetic-xgc2-slam
     - ros-noetic-xgc2-fast-lio2
     - ros-noetic-xgc2-swarm-lio2
-    - ros-noetic-xgc2-livox-ros-driver
     - ros-noetic-xgc2-swarm-msgs
     - ros-noetic-xgc2-udp-bridge
     - ros-noetic-xgc2-point-lio
@@ -33,6 +31,7 @@ apt:
     - ros-noetic-xgc2-voxel-slam
     - ros-noetic-xgc2-voxelslam-pointcloud2
   depends:
+    - ros-noetic-livox-ros-driver
     - ros-noetic-xgc2-fast-lio2
     - ros-noetic-xgc2-swarm-lio2
     - ros-noetic-xgc2-point-lio
@@ -58,8 +57,6 @@ ownership:
     - /opt/ros/noetic/lib/fast_lio
     - /opt/ros/noetic/share/swarm_lio
     - /opt/ros/noetic/lib/swarm_lio
-    - /opt/ros/noetic/share/livox_ros_driver
-    - /opt/ros/noetic/lib/livox_ros_driver
     - /opt/ros/noetic/share/swarm_msgs
     - /opt/ros/noetic/share/udp_bridge
     - /opt/ros/noetic/lib/udp_bridge

@@ -10,7 +10,9 @@ Private ROS1 Noetic SLAM package repository for XGC2.
 - `lio_sam`: LIO-SAM ROS package. The Deb artifact is named `ros-noetic-xgc2-lio-sam`.
 - `voxel_slam`: Voxel-SLAM ROS package. The Deb artifact is named `ros-noetic-xgc2-voxel-slam`.
 - `voxelslam_pointcloud2`: Voxel-SLAM RViz point cloud plugin. The Deb artifact is named `ros-noetic-xgc2-voxelslam-pointcloud2`.
-- `livox_ros_driver`, `swarm_msgs`, and `udp_bridge`: support packages required by the bundled SLAM stacks.
+- `swarm_msgs` and `udp_bridge`: support packages required by the bundled SLAM stacks.
+
+Livox support is provided by the separate driver product package `ros-noetic-livox-ros-driver`.
 
 ## Install
 

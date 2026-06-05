@@ -7,7 +7,7 @@ source "/opt/ros/${ROS_DISTRO}/setup.bash"
 dpkg -s ros-noetic-xgc2-slam >/dev/null
 dpkg -s ros-noetic-xgc2-fast-lio2 >/dev/null
 dpkg -s ros-noetic-xgc2-swarm-lio2 >/dev/null
-dpkg -s ros-noetic-xgc2-livox-ros-driver >/dev/null
+dpkg -s ros-noetic-livox-ros-driver >/dev/null
 dpkg -s ros-noetic-xgc2-swarm-msgs >/dev/null
 dpkg -s ros-noetic-xgc2-udp-bridge >/dev/null
 dpkg -s ros-noetic-xgc2-point-lio >/dev/null
