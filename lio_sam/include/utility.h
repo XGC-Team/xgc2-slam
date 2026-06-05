@@ -17,42 +17,11 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <unordered_map>
-#include <flann/util/serialization.h>
-
-namespace flann {
-namespace serialization {
-
-template<typename K, typename V>
-struct Serializer<std::unordered_map<K, V> >
-{
-    template<typename InputArchive>
-    static inline void load(InputArchive& ar, std::unordered_map<K, V>& map_val)
-    {
-        size_t size;
-        ar & size;
-        for (size_t i = 0; i < size; ++i) {
-            K key;
-            ar & key;
-            V value;
-            ar & value;
-            map_val[key] = value;
-        }
-    }
-
-    template<typename OutputArchive>
-    static inline void save(OutputArchive& ar, const std::unordered_map<K, V>& map_val)
-    {
-        ar & map_val.size();
-        for (typename std::unordered_map<K, V>::const_iterator i = map_val.begin(); i != map_val.end(); ++i) {
-            ar & i->first;
-            ar & i->second;
-        }
-    }
-};
-
-}  // namespace serialization
-}  // namespace flann
+// FLANN 1.9.1 on Ubuntu Focal lacks serialization for std::unordered_map.
+#ifdef USE_UNORDERED_MAP
+#undef USE_UNORDERED_MAP
+#endif
+#define USE_UNORDERED_MAP 0
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
