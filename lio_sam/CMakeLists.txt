@@ -57,7 +57,6 @@ catkin_package(
   geometry_msgs
   sensor_msgs
   message_runtime
-  message_generation
   visualization_msgs
 )
 
