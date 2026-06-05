@@ -56,7 +56,7 @@ docker run --rm \
 
     export DEBIAN_FRONTEND=noninteractive
     apt-get update
-    apt-get install -y --no-install-recommends \
+    apt_packages=(
       build-essential \
       ca-certificates \
       cmake \
@@ -72,11 +72,11 @@ docker run --rm \
       rsync \
       ros-noetic-eigen-conversions \
       ros-noetic-geometry-msgs \
-      ros-noetic-gtsam \
       ros-noetic-mavros-msgs \
       ros-noetic-message-generation \
       ros-noetic-message-runtime \
       ros-noetic-nav-msgs \
+      ros-noetic-pcl-conversions \
       ros-noetic-pcl-ros \
       ros-noetic-rosbag \
       ros-noetic-roscpp \
@@ -86,7 +86,24 @@ docker run --rm \
       ros-noetic-rospy \
       ros-noetic-sensor-msgs \
       ros-noetic-std-msgs \
-      ros-noetic-tf
+      ros-noetic-tf \
+      ros-noetic-visualization-msgs
+    )
+    case "${PACKAGE_GROUP}" in
+      all)
+        apt_packages+=(libgoogle-glog-dev libopencv-dev qtbase5-dev ros-noetic-cv-bridge ros-noetic-gtsam ros-noetic-rviz)
+        ;;
+      point-lio)
+        apt_packages+=(libgoogle-glog-dev)
+        ;;
+      lio-sam)
+        apt_packages+=(libopencv-dev ros-noetic-cv-bridge ros-noetic-gtsam)
+        ;;
+      voxel-slam)
+        apt_packages+=(qtbase5-dev ros-noetic-gtsam ros-noetic-rviz)
+        ;;
+    esac
+    apt-get install -y --no-install-recommends "${apt_packages[@]}"
 
     rm -rf /workspace/work/src /workspace/work/build /workspace/work/devel /workspace/work/install-root
     mkdir -p /workspace/work/src
@@ -97,6 +114,10 @@ docker run --rm \
         rsync -a --delete /workspace/slam/swarm_lio2/swarm_msgs/ /workspace/work/src/swarm_msgs/
         rsync -a --delete /workspace/slam/swarm_lio2/udp_bridge/ /workspace/work/src/udp_bridge/
         rsync -a --delete /workspace/slam/swarm_lio2/swarm_lio/ /workspace/work/src/swarm_lio/
+        rsync -a --delete /workspace/slam/point_lio/ /workspace/work/src/point_lio/
+        rsync -a --delete /workspace/slam/lio_sam/ /workspace/work/src/lio_sam/
+        rsync -a --delete /workspace/slam/voxel_slam/voxel_slam/ /workspace/work/src/voxel_slam/
+        rsync -a --delete /workspace/slam/voxel_slam/voxelslam_pointcloud2/ /workspace/work/src/voxelslam_pointcloud2/
         ;;
       fast-lio2)
         rsync -a --delete /workspace/slam/fast_lio/ /workspace/work/src/fast_lio/
@@ -107,6 +128,18 @@ docker run --rm \
         rsync -a --delete /workspace/slam/swarm_lio2/swarm_msgs/ /workspace/work/src/swarm_msgs/
         rsync -a --delete /workspace/slam/swarm_lio2/udp_bridge/ /workspace/work/src/udp_bridge/
         rsync -a --delete /workspace/slam/swarm_lio2/swarm_lio/ /workspace/work/src/swarm_lio/
+        ;;
+      point-lio)
+        rsync -a --delete /workspace/slam/swarm_lio2/livox_ros_driver_mars/ /workspace/work/src/livox_ros_driver_mars/
+        rsync -a --delete /workspace/slam/point_lio/ /workspace/work/src/point_lio/
+        ;;
+      lio-sam)
+        rsync -a --delete /workspace/slam/lio_sam/ /workspace/work/src/lio_sam/
+        ;;
+      voxel-slam)
+        rsync -a --delete /workspace/slam/swarm_lio2/livox_ros_driver_mars/ /workspace/work/src/livox_ros_driver_mars/
+        rsync -a --delete /workspace/slam/voxel_slam/voxel_slam/ /workspace/work/src/voxel_slam/
+        rsync -a --delete /workspace/slam/voxel_slam/voxelslam_pointcloud2/ /workspace/work/src/voxelslam_pointcloud2/
         ;;
       *)
         echo "unknown package group: ${PACKAGE_GROUP}" >&2

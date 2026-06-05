@@ -23,6 +23,14 @@ required_files=(
   "swarm_lio2/udp_bridge/package.xml"
   "swarm_lio2/swarm_lio/CMakeLists.txt"
   "swarm_lio2/swarm_lio/package.xml"
+  "point_lio/CMakeLists.txt"
+  "point_lio/package.xml"
+  "lio_sam/CMakeLists.txt"
+  "lio_sam/package.xml"
+  "voxel_slam/voxel_slam/CMakeLists.txt"
+  "voxel_slam/voxel_slam/package.xml"
+  "voxel_slam/voxelslam_pointcloud2/CMakeLists.txt"
+  "voxel_slam/voxelslam_pointcloud2/package.xml"
 )
 
 for file in "${required_files[@]}"; do
@@ -35,8 +43,13 @@ done
 grep -q "id: xgc2-slam" "${REPO_ROOT}/.xgc2/product.yml"
 grep -q "ros-noetic-xgc2-fast-lio2" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 grep -q "ros-noetic-xgc2-swarm-lio2" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
+grep -q "ros-noetic-xgc2-point-lio" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
+grep -q "ros-noetic-xgc2-lio-sam" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
+grep -q "ros-noetic-xgc2-voxel-slam" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
+grep -q "ros-noetic-xgc2-voxelslam-pointcloud2" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 grep -q "ros-noetic-xgc2-slam" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 grep -q "prune_installed_package_payload" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 grep -q "message_headers_for_package" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
+grep -q "require_ros_package_payload" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 
 echo "Package compliance check passed"

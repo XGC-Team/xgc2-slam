@@ -105,6 +105,22 @@ copy_ros_package_paths() {
   copy_path "${PREFIX_ROOT}/share/gennodejs/ros/${ros_pkg}" "${dst_root}"
   copy_path "${PREFIX_ROOT}/share/common-lisp/ros/${ros_pkg}" "${dst_root}"
   copy_path "${PREFIX_ROOT}/share/roseus/ros/${ros_pkg}" "${dst_root}"
+
+  case "${ros_pkg}" in
+    voxelslam_pointcloud2)
+      copy_path "${PREFIX_ROOT}/lib/libvoxelslam_pointcloud2.so" "${dst_root}"
+      ;;
+  esac
+}
+
+require_ros_package_payload() {
+  local ros_pkg="$1"
+  local pkg_root="$2"
+
+  if [[ ! -d "${pkg_root}${PREFIX}/share/${ros_pkg}" && ! -d "${pkg_root}${PREFIX}/lib/${ros_pkg}" && ! -d "${pkg_root}${PREFIX}/include/${ros_pkg}" ]]; then
+    echo "missing installed payload for ROS package ${ros_pkg}; check that the source package has catkin install() rules" >&2
+    exit 1
+  fi
 }
 
 message_headers_for_package() {
@@ -114,8 +130,14 @@ message_headers_for_package() {
     fast_lio)
       printf '%s\n' Pose6D.h
       ;;
+    point_lio)
+      printf '%s\n' LocalSensorExternalTrigger.h
+      ;;
     livox_ros_driver)
       printf '%s\n' CustomMsg.h CustomPoint.h
+      ;;
+    lio_sam)
+      printf '%s\n' cloud_info.h save_map.h
       ;;
     swarm_lio)
       printf '%s\n' Pose6D.h States.h
@@ -156,7 +178,7 @@ prune_installed_package_payload() {
 
     while IFS= read -r -d '' asset; do
       case "${asset}" in
-        */mesh/*|*/meshes/*|*/model/*|*/models/*|*/texture/*|*/textures/*|*/urdf/*)
+        */icon/*|*/icons/*|*/media/*|*/mesh/*|*/meshes/*|*/model/*|*/models/*|*/texture/*|*/textures/*|*/urdf/*)
           ;;
         *)
           rm -f "${asset}"
@@ -204,6 +226,7 @@ build_ros_package_deb() {
   mkdir -p "${pkg_root}"
 
   copy_ros_package_paths "${ros_pkg}" "${pkg_root}"
+  require_ros_package_payload "${ros_pkg}" "${pkg_root}"
   prune_installed_package_payload "${pkg_root}" "${ros_pkg}"
   write_control "${pkg_root}" "${package}" "${depends}" "${description}"
   fakeroot dpkg-deb --build "${pkg_root}" "${OUTPUT_DIR}/${package}_${VERSION}_${ARCH}.deb" >/dev/null
@@ -214,17 +237,28 @@ fast_pkg="ros-noetic-xgc2-fast-lio2"
 swarm_msgs_pkg="ros-noetic-xgc2-swarm-msgs"
 udp_pkg="ros-noetic-xgc2-udp-bridge"
 swarm_pkg="ros-noetic-xgc2-swarm-lio2"
+point_lio_pkg="ros-noetic-xgc2-point-lio"
+lio_sam_pkg="ros-noetic-xgc2-lio-sam"
+voxel_slam_pkg="ros-noetic-xgc2-voxel-slam"
+voxelslam_pointcloud2_pkg="ros-noetic-xgc2-voxelslam-pointcloud2"
 meta_pkg="ros-noetic-xgc2-slam"
 
 ros_base_depends="ros-noetic-roscpp, ros-noetic-rospy, ros-noetic-std-msgs, ros-noetic-sensor-msgs, ros-noetic-geometry-msgs, ros-noetic-nav-msgs"
-lio_depends="${ros_base_depends}, ros-noetic-tf, ros-noetic-pcl-ros, ros-noetic-eigen-conversions, libeigen3-dev, python3, python3-dev"
+lio_depends="${ros_base_depends}, ros-noetic-tf, ros-noetic-pcl-ros, ros-noetic-pcl-conversions, ros-noetic-eigen-conversions, libeigen3-dev, python3, python3-dev"
+gtsam_depends="ros-noetic-gtsam, libtbb2"
+opencv_depends="ros-noetic-cv-bridge, libopencv-dev"
+rviz_plugin_depends="ros-noetic-rviz, libqt5core5a, libqt5gui5, libqt5widgets5"
 
-build_fast_lio2_debs() {
+build_livox_driver_deb() {
   build_ros_package_deb \
     "${livox_pkg}" \
     "livox_ros_driver" \
     "ros-noetic-roscpp, ros-noetic-rospy, ros-noetic-std-msgs, ros-noetic-sensor-msgs, ros-noetic-message-runtime, ros-noetic-rosbag, ros-noetic-pcl-ros, libapr1" \
     "XGC2 Livox ROS driver support package"
+}
+
+build_fast_lio2_debs() {
+  build_livox_driver_deb
 
   build_ros_package_deb \
     "${fast_pkg}" \
@@ -234,6 +268,8 @@ build_fast_lio2_debs() {
 }
 
 build_swarm_lio2_debs() {
+  build_livox_driver_deb
+
   build_ros_package_deb \
     "${swarm_msgs_pkg}" \
     "swarm_msgs" \
@@ -253,6 +289,40 @@ build_swarm_lio2_debs() {
     "XGC2 Swarm-LIO2 cooperative LiDAR-inertial odometry package"
 }
 
+build_point_lio_debs() {
+  build_livox_driver_deb
+
+  build_ros_package_deb \
+    "${point_lio_pkg}" \
+    "point_lio" \
+    "${lio_depends}, ros-noetic-message-runtime, libgoogle-glog0v5, ${livox_pkg} (= ${VERSION})" \
+    "XGC2 Point-LIO LiDAR-inertial odometry package"
+}
+
+build_lio_sam_debs() {
+  build_ros_package_deb \
+    "${lio_sam_pkg}" \
+    "lio_sam" \
+    "${ros_base_depends}, ros-noetic-visualization-msgs, ros-noetic-tf, ros-noetic-pcl-conversions, ${opencv_depends}, ${gtsam_depends}, ros-noetic-message-runtime" \
+    "XGC2 LIO-SAM LiDAR-inertial smoothing and mapping package"
+}
+
+build_voxel_slam_debs() {
+  build_livox_driver_deb
+
+  build_ros_package_deb \
+    "${voxel_slam_pkg}" \
+    "voxel_slam" \
+    "${lio_depends}, ros-noetic-rosbag, ros-noetic-visualization-msgs, ${gtsam_depends}, ${livox_pkg} (= ${VERSION})" \
+    "XGC2 Voxel-SLAM LiDAR mapping package"
+
+  build_ros_package_deb \
+    "${voxelslam_pointcloud2_pkg}" \
+    "voxelslam_pointcloud2" \
+    "${rviz_plugin_depends}" \
+    "XGC2 Voxel-SLAM RViz point cloud plugin package"
+}
+
 build_meta_deb() {
   meta_root="${BUILD_DIR}/${meta_pkg}"
   rm -rf "${meta_root}"
@@ -260,7 +330,7 @@ build_meta_deb() {
   write_control \
     "${meta_root}" \
     "${meta_pkg}" \
-    "${fast_pkg} (= ${VERSION}), ${swarm_pkg} (= ${VERSION})" \
+    "${fast_pkg} (= ${VERSION}), ${swarm_pkg} (= ${VERSION}), ${point_lio_pkg} (= ${VERSION}), ${lio_sam_pkg} (= ${VERSION}), ${voxel_slam_pkg} (= ${VERSION}), ${voxelslam_pointcloud2_pkg} (= ${VERSION})" \
     "XGC2 ROS1 SLAM package set"
   fakeroot dpkg-deb --build "${meta_root}" "${OUTPUT_DIR}/${meta_pkg}_${VERSION}_${ARCH}.deb" >/dev/null
 }
@@ -269,6 +339,9 @@ case "${PACKAGE_GROUP}" in
   all)
     build_fast_lio2_debs
     build_swarm_lio2_debs
+    build_point_lio_debs
+    build_lio_sam_debs
+    build_voxel_slam_debs
     build_meta_deb
     ;;
   fast-lio2)
@@ -276,6 +349,15 @@ case "${PACKAGE_GROUP}" in
     ;;
   swarm-lio2)
     build_swarm_lio2_debs
+    ;;
+  point-lio)
+    build_point_lio_debs
+    ;;
+  lio-sam)
+    build_lio_sam_debs
+    ;;
+  voxel-slam)
+    build_voxel_slam_debs
     ;;
   meta)
     build_meta_deb

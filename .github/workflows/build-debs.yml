@@ -39,6 +39,24 @@ jobs:
           - package-group: swarm-lio2
             arch: arm64
             runner: ubuntu-24.04-arm
+          - package-group: point-lio
+            arch: amd64
+            runner: ubuntu-latest
+          - package-group: point-lio
+            arch: arm64
+            runner: ubuntu-24.04-arm
+          - package-group: lio-sam
+            arch: amd64
+            runner: ubuntu-latest
+          - package-group: lio-sam
+            arch: arm64
+            runner: ubuntu-24.04-arm
+          - package-group: voxel-slam
+            arch: amd64
+            runner: ubuntu-latest
+          - package-group: voxel-slam
+            arch: arm64
+            runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
 
     steps:
