@@ -1,9 +1,10 @@
-name: build-debs
+name: ci
 
 on:
   push:
     branches:
       - noetic
+  pull_request:
   workflow_dispatch:
 
 defaults:
@@ -17,9 +18,13 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Check package metadata and packaging consistency
-        run: .xgc2/scripts/check_package_compliance.sh
+        run: |
+          git diff --check HEAD
+          .xgc2/scripts/check_package_compliance.sh
 
   deb-build:
     name: Build ${{ matrix.package-group }} (${{ matrix.arch }})
@@ -108,33 +113,3 @@ jobs:
         with:
           name: xgc2-slam-debs-meta
           path: debs/*.deb
-
-  publish-apt:
-    name: Publish APT
-    runs-on: ubuntu-latest
-    needs:
-      - deb-build
-      - meta-build
-    env:
-      APT_REPO_HOST: ${{ secrets.APT_REPO_HOST }}
-      APT_REPO_PORT: ${{ secrets.APT_REPO_PORT }}
-      APT_REPO_SSH_KEY: ${{ secrets.APT_REPO_SSH_KEY }}
-      APT_REPO_KNOWN_HOSTS: ${{ secrets.APT_REPO_KNOWN_HOSTS }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download deb artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: xgc2-slam-debs-*
-          path: debs
-          merge-multiple: true
-
-      - name: Skip APT publish when secrets are not configured
-        if: ${{ env.APT_REPO_HOST == '' || env.APT_REPO_PORT == '' || env.APT_REPO_SSH_KEY == '' || env.APT_REPO_KNOWN_HOSTS == '' }}
-        run: |
-          echo "APT publish skipped: APT_REPO_HOST, APT_REPO_PORT, APT_REPO_SSH_KEY, or APT_REPO_KNOWN_HOSTS is not configured."
-
-      - name: Publish to self-hosted APT repository
-        if: ${{ env.APT_REPO_HOST != '' && env.APT_REPO_PORT != '' && env.APT_REPO_SSH_KEY != '' && env.APT_REPO_KNOWN_HOSTS != '' }}
-        run: .xgc2/scripts/publish_apt_repo.sh --deb-dir debs

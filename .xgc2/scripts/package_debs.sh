@@ -4,7 +4,7 @@ set -euo pipefail
 INSTALL_ROOT=""
 OUTPUT_DIR=""
 ROS_DISTRO="${ROS_DISTRO:-noetic}"
-VERSION="${PACKAGE_VERSION:-1.0.0-1}"
+VERSION="${PACKAGE_VERSION:-1.1.0-1}"
 PACKAGE_GROUP="${PACKAGE_GROUP:-all}"
 ARCH="$(dpkg --print-architecture)"
 
@@ -229,7 +229,7 @@ build_ros_package_deb() {
   fakeroot dpkg-deb --build "${pkg_root}" "${OUTPUT_DIR}/${package}_${VERSION}_${ARCH}.deb" >/dev/null
 }
 
-livox_dep="ros-noetic-livox-ros-driver"
+livox_dep="ros-noetic-livox-ros-driver (>= 2.6.0-1)"
 fast_pkg="ros-noetic-xgc2-fast-lio2"
 swarm_msgs_pkg="ros-noetic-xgc2-swarm-msgs"
 udp_pkg="ros-noetic-xgc2-udp-bridge"
