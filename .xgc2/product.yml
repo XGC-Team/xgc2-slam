@@ -1,6 +1,7 @@
 schema: xgc2.product.v1
 id: xgc2-slam
 name: XGC2 SLAM
+version: 1.0.0-1
 kind: ros1-apt
 summary: ROS1 SLAM packages including FAST-LIO2, Swarm-LIO2, Point-LIO, LIO-SAM, and Voxel-SLAM.
 
