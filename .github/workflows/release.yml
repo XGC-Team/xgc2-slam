@@ -94,10 +94,7 @@ jobs:
 
   deb-build:
     name: Build ${{ matrix.package-group }} (${{ matrix.arch }})
-    needs:
-      - validate-release-inputs
-      - cpp-quality
-      - source-tests
+    needs: validate-release-inputs
     strategy:
       fail-fast: false
       matrix:
