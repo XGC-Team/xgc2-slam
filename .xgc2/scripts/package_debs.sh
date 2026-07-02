@@ -241,7 +241,7 @@ build_ros_package_deb() {
   fakeroot dpkg-deb --build "${pkg_root}" "${OUTPUT_DIR}/${package}_${VERSION}_${ARCH}.deb" >/dev/null
 }
 
-livox_dep="ros-noetic-livox-ros-driver (>= 2.6.0-1)"
+livox_dep="ros-noetic-livox-ros-driver (>= 2.6.0-3)"
 fast_pkg="ros-noetic-xgc2-fast-lio2"
 swarm_msgs_pkg="ros-noetic-xgc2-swarm-msgs"
 udp_pkg="ros-noetic-xgc2-udp-bridge"

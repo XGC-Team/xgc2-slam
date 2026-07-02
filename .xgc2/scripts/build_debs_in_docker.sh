@@ -54,8 +54,21 @@ docker run --rm \
   bash -lc '
     set -euo pipefail
 
+    apt_update_retry() {
+      local attempt
+      for attempt in 1 2 3 4; do
+        rm -rf /var/lib/apt/lists/*
+        if apt-get update; then
+          return 0
+        fi
+        sleep "$((attempt * 10))"
+      done
+      rm -rf /var/lib/apt/lists/*
+      apt-get update
+    }
+
     export DEBIAN_FRONTEND=noninteractive
-    apt-get update
+    apt_update_retry
     apt-get install -y --no-install-recommends ca-certificates curl
     install -m 0755 -d /etc/apt/keyrings
     curl -fsSL https://xgc2.apt.xiaokang.ink/xgc2-archive-keyring.gpg \
@@ -63,7 +76,7 @@ docker run --rm \
     chmod 0644 /etc/apt/keyrings/xgc2-archive-keyring.gpg
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/xgc2-archive-keyring.gpg] https://xgc2.apt.xiaokang.ink focal main" \
       > /etc/apt/sources.list.d/xgc2.list
-    apt-get update
+    apt_update_retry
 
     apt_packages=(
       build-essential \
