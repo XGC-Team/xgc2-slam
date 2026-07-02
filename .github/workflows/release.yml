@@ -56,20 +56,15 @@ jobs:
 
   cpp-quality:
     name: C++ quality
+    if: ${{ inputs.run_cpp_quality }}
     needs: validate-release-inputs
     runs-on: ubuntu-latest
     steps:
-      - name: Skip C++ quality
-        if: ${{ !inputs.run_cpp_quality }}
-        run: echo "C++ quality disabled by input"
-
       - uses: actions/checkout@v4
-        if: inputs.run_cpp_quality
         with:
           fetch-depth: 2
 
       - name: Run lightweight C++ quality checks
-        if: inputs.run_cpp_quality
         run: git diff --check HEAD
 
   source-tests:
