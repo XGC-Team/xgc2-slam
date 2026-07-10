@@ -1,7 +1,7 @@
 schema: xgc2.product.v1
 id: xgc2-slam
 name: XGC2 SLAM
-version: 1.1.0-8
+version: 1.1.0-9
 kind: ros1-apt
 summary: ROS1 SLAM packages including FAST-LIO2, Swarm-LIO2, Point-LIO, LIO-SAM, and
   Voxel-SLAM.
@@ -32,12 +32,12 @@ apt:
   - ros-noetic-xgc2-voxelslam-pointcloud2
   depends:
   - ros-noetic-livox-ros-driver (>= 2.6.0-7)
-  - ros-noetic-xgc2-fast-lio2 (>= 1.1.0-8)
-  - ros-noetic-xgc2-swarm-lio2 (>= 1.1.0-8)
-  - ros-noetic-xgc2-point-lio (>= 1.1.0-8)
-  - ros-noetic-xgc2-lio-sam (>= 1.1.0-8)
-  - ros-noetic-xgc2-voxel-slam (>= 1.1.0-8)
-  - ros-noetic-xgc2-voxelslam-pointcloud2 (>= 1.1.0-8)
+  - ros-noetic-xgc2-fast-lio2 (>= 1.1.0-9)
+  - ros-noetic-xgc2-swarm-lio2 (>= 1.1.0-9)
+  - ros-noetic-xgc2-point-lio (>= 1.1.0-9)
+  - ros-noetic-xgc2-lio-sam (>= 1.1.0-9)
+  - ros-noetic-xgc2-voxel-slam (>= 1.1.0-9)
+  - ros-noetic-xgc2-voxelslam-pointcloud2 (>= 1.1.0-9)
 usage:
   install: 'sudo apt update
 
