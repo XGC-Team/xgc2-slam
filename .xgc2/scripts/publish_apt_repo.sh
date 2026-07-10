@@ -23,8 +23,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "${APT_REPO_HOST}" || -z "${APT_REPO_SSH_KEY}" || -z "${APT_REPO_KNOWN_HOSTS}" ]]; then
-  echo "APT publish skipped: APT_REPO_HOST, APT_REPO_SSH_KEY, or APT_REPO_KNOWN_HOSTS is not configured."
-  exit 0
+  echo "APT publish refused: APT_REPO_HOST, APT_REPO_SSH_KEY, or APT_REPO_KNOWN_HOSTS is not configured." >&2
+  exit 1
 fi
 
 if ! compgen -G "${DEB_DIR}/*.deb" >/dev/null; then

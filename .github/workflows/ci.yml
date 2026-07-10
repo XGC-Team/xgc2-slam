@@ -78,11 +78,32 @@ jobs:
             --output-dir "$GITHUB_WORKSPACE/debs" \
             --skip-install-check
 
+      - name: Create trusted build manifest
+        run: |
+          product_version="$(awk -F': *' '/^version:/ {print $2; exit}' .xgc2/product.yml)"
+          python3 .xgc2/scripts/xgc2_artifact_manifest.py build \
+            --deb-dir debs \
+            --output-dir build-manifests \
+            --product xgc2-slam \
+            --product-version "$product_version" \
+            --distribution focal \
+            --architecture "${{ matrix.arch }}" \
+            --source-sha "$GITHUB_SHA" \
+            --ci-run-id "$GITHUB_RUN_ID" \
+            --ci-workflow "$GITHUB_WORKFLOW" \
+            --ci-workflow-ref "$GITHUB_WORKFLOW_REF"
+          mv "build-manifests/xgc2-slam_focal_${{ matrix.arch }}.build.json" \
+            "build-manifests/xgc2-slam_${{ matrix.package-group }}_focal_${{ matrix.arch }}.build.json"
+
       - name: Upload deb artifacts
         uses: actions/upload-artifact@v4
         with:
           name: xgc2-slam-debs-${{ matrix.package-group }}-${{ matrix.arch }}
-          path: debs/*.deb
+          path: |
+            debs/*.deb
+            build-manifests/*.json
+          retention-days: 14
+          include-hidden-files: true
 
   meta-build:
     name: Build SLAM meta packages
@@ -100,16 +121,34 @@ jobs:
         env:
           SLAM_META_ARCHES: amd64 arm64
         run: |
-          mkdir -p debs
+          product_version="$(awk -F': *' '/^version:/ {print $2; exit}' .xgc2/product.yml)"
           for arch in $SLAM_META_ARCHES; do
+            mkdir -p "debs/$arch"
             .xgc2/scripts/package_debs.sh \
               --package-group meta \
               --arch "$arch" \
-              --output-dir debs
+              --output-dir "debs/$arch"
+            python3 .xgc2/scripts/xgc2_artifact_manifest.py build \
+              --deb-dir "debs/$arch" \
+              --output-dir build-manifests \
+              --product xgc2-slam \
+              --product-version "$product_version" \
+              --distribution focal \
+              --architecture "$arch" \
+              --source-sha "$GITHUB_SHA" \
+              --ci-run-id "$GITHUB_RUN_ID" \
+              --ci-workflow "$GITHUB_WORKFLOW" \
+              --ci-workflow-ref "$GITHUB_WORKFLOW_REF"
+            mv "build-manifests/xgc2-slam_focal_${arch}.build.json" \
+              "build-manifests/xgc2-slam_meta_focal_${arch}.build.json"
           done
 
       - name: Upload meta artifacts
         uses: actions/upload-artifact@v4
         with:
           name: xgc2-slam-debs-meta
-          path: debs/*.deb
+          path: |
+            debs/**/*.deb
+            build-manifests/*.json
+          retention-days: 14
+          include-hidden-files: true
