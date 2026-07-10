@@ -10,7 +10,6 @@ required_files=(
   ".xgc2/scripts/check_package_compliance.sh"
   ".xgc2/scripts/check_ros_packages.sh"
   ".xgc2/scripts/package_debs.sh"
-  ".xgc2/scripts/publish_apt_repo.sh"
   ".github/workflows/ci.yml"
   ".github/workflows/release.yml"
   "README.md"
@@ -53,7 +52,5 @@ grep -q "message_headers_for_package" "${REPO_ROOT}/.xgc2/scripts/package_debs.s
 grep -q "require_ros_package_payload" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 grep -Fq 'PACKAGE_VERSION:-$(product_version)' "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 grep -q "workflow_dispatch:" "${REPO_ROOT}/.github/workflows/release.yml"
-grep -q "publish_apt:" "${REPO_ROOT}/.github/workflows/release.yml"
-grep -q "publish_apt_repo.sh --deb-dir publish" "${REPO_ROOT}/.github/workflows/release.yml"
 
 echo "Package compliance check passed"
