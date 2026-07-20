@@ -74,3 +74,6 @@ ownership:
   - /opt/ros/noetic/lib/voxel_slam
   - /opt/ros/noetic/share/voxelslam_pointcloud2
   - /opt/ros/noetic/lib/voxelslam_pointcloud2
+release:
+  dependency_policy:
+    livox-ros-driver: rebuild
