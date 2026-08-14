@@ -2,6 +2,12 @@
 
 Private ROS1 Noetic SLAM package repository for XGC2.
 
+This tree only aggregates already-packaged algorithms. It does not run a
+combined CI matrix. Debug and CI each algorithm in its own XGC-Team
+repository. Vehicle-specific work uses a `robot-sensor` branch on that
+fork (for example `scout-helios16`). The release workflow here is only
+for Debian artifacts that are already published.
+
 ## Packages
 
 - `fast_lio`: FAST-LIO2 ROS package. The Deb artifact is named `ros-noetic-xgc2-fast-lio2`.
