@@ -1,25 +1,37 @@
 # xgc2-slam
 
-Private ROS1 Noetic SLAM package repository for XGC2.
+Public XGC-Team aggregator for ROS 1 Noetic SLAM packages.
 
-This tree only aggregates already-packaged algorithms. It does not run a
-combined CI matrix. Debug and CI each algorithm in its own XGC-Team
-repository. Vehicle-specific work uses a `robot-sensor` branch on that
-fork (for example `scout-helios16`). The release workflow here is only
-for Debian artifacts that are already published.
+This repository actively maintains one algorithm: Faster-LIO. Debug and CI
+for that package live in [`XGC-Team/xgc2-faster-lio`](https://github.com/XGC-Team/xgc2-faster-lio).
+Vehicle-specific work uses a `robot-sensor` branch on that fork
+(for example `scout-helios16`). The release workflow here only builds
+already-published Debian artifacts for the maintained set.
 
-## Packages
+## Maintained
 
-- `fast_lio`: FAST-LIO2 ROS package. The Deb artifact is named `ros-noetic-xgc2-fast-lio2`.
-- `faster_lio`: Faster-LIO ROS package, synced from the `XGC-Team/xgc2-faster-lio` fork. The Deb artifact is named `ros-noetic-xgc2-faster-lio`.
-- `swarm_lio`: Swarm-LIO2 ROS package. The Deb artifact is named `ros-noetic-xgc2-swarm-lio2`.
-- `point_lio`: Point-LIO ROS package. The Deb artifact is named `ros-noetic-xgc2-point-lio`.
-- `lio_sam`: LIO-SAM ROS package. The Deb artifact is named `ros-noetic-xgc2-lio-sam`.
-- `voxel_slam`: Voxel-SLAM ROS package. The Deb artifact is named `ros-noetic-xgc2-voxel-slam`.
-- `voxelslam_pointcloud2`: Voxel-SLAM RViz point cloud plugin. The Deb artifact is named `ros-noetic-xgc2-voxelslam-pointcloud2`.
-- `swarm_msgs` and `udp_bridge`: support packages required by the bundled SLAM stacks.
+| Path | Repository | Debian package |
+| --- | --- | --- |
+| `faster_lio` | [xgc2-faster-lio](https://github.com/XGC-Team/xgc2-faster-lio) | `ros-noetic-xgc2-faster-lio` |
 
-Livox support is provided by the separate driver product package `ros-noetic-livox-ros-driver`.
+Clone recursively:
+
+```bash
+git clone --recurse-submodules git@github.com:XGC-Team/xgc2-slam.git
+```
+
+## Not maintained here
+
+The trees under `external/` are public upstream forks. They are parked for
+reference and are not part of the current Debian set or aggregator CI.
+
+| Path | Repository | Upstream |
+| --- | --- | --- |
+| `external/fast_lio` | [xgc2-fast-lio](https://github.com/XGC-Team/xgc2-fast-lio) | hku-mars/FAST_LIO |
+| `external/lio_sam` | [xgc2-lio-sam](https://github.com/XGC-Team/xgc2-lio-sam) | TixiaoShan/LIO-SAM |
+| `external/point_lio` | [xgc2-point-lio](https://github.com/XGC-Team/xgc2-point-lio) | hku-mars/Point-LIO |
+| `external/swarm_lio2` | [xgc2-swarm-lio2](https://github.com/XGC-Team/xgc2-swarm-lio2) | hku-mars/Swarm-LIO2 |
+| `external/voxel_slam` | [xgc2-voxel-slam](https://github.com/XGC-Team/xgc2-voxel-slam) | hku-mars/Voxel-SLAM |
 
 ## Install
 
@@ -28,17 +40,11 @@ sudo apt update
 sudo apt install ros-noetic-xgc2-slam
 ```
 
-The `ros-noetic-xgc2-slam` meta package pulls in FAST-LIO2, Faster-LIO, Swarm-LIO2, Point-LIO, LIO-SAM, Voxel-SLAM, the Voxel-SLAM RViz plugin, and their support packages.
+The `ros-noetic-xgc2-slam` meta package currently pulls Faster-LIO.
 
 ## Smoke Test
 
 ```bash
 source /opt/ros/noetic/setup.bash
-rospack find fast_lio
 rospack find faster_lio
-rospack find swarm_lio
-rospack find point_lio
-rospack find lio_sam
-rospack find voxel_slam
-rospack find voxelslam_pointcloud2
 ```

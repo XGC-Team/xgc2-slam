@@ -1,0 +1,24 @@
+[submodule "faster_lio"]
+	path = faster_lio
+	url = git@github.com:XGC-Team/xgc2-faster-lio.git
+	branch = main
+[submodule "external/fast_lio"]
+	path = external/fast_lio
+	url = git@github.com:XGC-Team/xgc2-fast-lio.git
+	branch = main
+[submodule "external/lio_sam"]
+	path = external/lio_sam
+	url = git@github.com:XGC-Team/xgc2-lio-sam.git
+	branch = master
+[submodule "external/point_lio"]
+	path = external/point_lio
+	url = git@github.com:XGC-Team/xgc2-point-lio.git
+	branch = point-lio-with-grid-map
+[submodule "external/swarm_lio2"]
+	path = external/swarm_lio2
+	url = git@github.com:XGC-Team/xgc2-swarm-lio2.git
+	branch = main
+[submodule "external/voxel_slam"]
+	path = external/voxel_slam
+	url = git@github.com:XGC-Team/xgc2-voxel-slam.git
+	branch = main

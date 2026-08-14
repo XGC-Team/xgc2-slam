@@ -21,28 +21,13 @@ done
 
 rm -rf "${WORK_DIR}/src" "${WORK_DIR}/build" "${WORK_DIR}/devel"
 mkdir -p "${WORK_DIR}/src"
-rsync -a --delete "${REPO_ROOT}/fast_lio/" "${WORK_DIR}/src/fast_lio/"
 rsync -a --delete "${REPO_ROOT}/faster_lio/" "${WORK_DIR}/src/faster_lio/"
-rsync -a --delete "${REPO_ROOT}/swarm_lio2/swarm_msgs/" "${WORK_DIR}/src/swarm_msgs/"
-rsync -a --delete "${REPO_ROOT}/swarm_lio2/udp_bridge/" "${WORK_DIR}/src/udp_bridge/"
-rsync -a --delete "${REPO_ROOT}/swarm_lio2/swarm_lio/" "${WORK_DIR}/src/swarm_lio/"
-rsync -a --delete "${REPO_ROOT}/point_lio/" "${WORK_DIR}/src/point_lio/"
-rsync -a --delete "${REPO_ROOT}/lio_sam/" "${WORK_DIR}/src/lio_sam/"
-rsync -a --delete "${REPO_ROOT}/voxel_slam/voxel_slam/" "${WORK_DIR}/src/voxel_slam/"
-rsync -a --delete "${REPO_ROOT}/voxel_slam/voxelslam_pointcloud2/" "${WORK_DIR}/src/voxelslam_pointcloud2/"
 
 cd "${WORK_DIR}"
 source "/opt/ros/${ROS_DISTRO}/setup.bash"
 catkin_make -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
 source "${WORK_DIR}/devel/setup.bash"
-test "$(rospack find fast_lio)" = "${WORK_DIR}/src/fast_lio"
 test "$(rospack find faster_lio)" = "${WORK_DIR}/src/faster_lio"
-test "$(rospack find swarm_lio)" = "${WORK_DIR}/src/swarm_lio"
-test "$(rospack find livox_ros_driver)" = "/opt/ros/${ROS_DISTRO}/share/livox_ros_driver"
-test "$(rospack find point_lio)" = "${WORK_DIR}/src/point_lio"
-test "$(rospack find lio_sam)" = "${WORK_DIR}/src/lio_sam"
-test "$(rospack find voxel_slam)" = "${WORK_DIR}/src/voxel_slam"
-test "$(rospack find voxelslam_pointcloud2)" = "${WORK_DIR}/src/voxelslam_pointcloud2"
 
 echo "ROS package check passed"

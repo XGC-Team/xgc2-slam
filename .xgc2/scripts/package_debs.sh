@@ -241,31 +241,11 @@ build_ros_package_deb() {
   fakeroot dpkg-deb --build "${pkg_root}" "${OUTPUT_DIR}/${package}_${VERSION}_${ARCH}.deb" >/dev/null
 }
 
-livox_dep="ros-noetic-livox-ros-driver (>= 2.6.0-7)"
-fast_pkg="ros-noetic-xgc2-fast-lio2"
 faster_pkg="ros-noetic-xgc2-faster-lio"
-swarm_msgs_pkg="ros-noetic-xgc2-swarm-msgs"
-udp_pkg="ros-noetic-xgc2-udp-bridge"
-swarm_pkg="ros-noetic-xgc2-swarm-lio2"
-point_lio_pkg="ros-noetic-xgc2-point-lio"
-lio_sam_pkg="ros-noetic-xgc2-lio-sam"
-voxel_slam_pkg="ros-noetic-xgc2-voxel-slam"
-voxelslam_pointcloud2_pkg="ros-noetic-xgc2-voxelslam-pointcloud2"
 meta_pkg="ros-noetic-xgc2-slam"
 
 ros_base_depends="ros-noetic-roscpp, ros-noetic-rospy, ros-noetic-std-msgs, ros-noetic-sensor-msgs, ros-noetic-geometry-msgs, ros-noetic-nav-msgs"
 lio_depends="${ros_base_depends}, ros-noetic-tf, ros-noetic-pcl-ros, ros-noetic-pcl-conversions, ros-noetic-eigen-conversions, libeigen3-dev, python3, python3-dev"
-gtsam_depends="ros-noetic-gtsam, libtbb2"
-opencv_depends="ros-noetic-cv-bridge, libopencv-dev"
-rviz_plugin_depends="ros-noetic-rviz, libqt5core5a, libqt5gui5, libqt5widgets5"
-
-build_fast_lio2_debs() {
-  build_ros_package_deb \
-    "${fast_pkg}" \
-    "fast_lio" \
-    "${lio_depends}, ros-noetic-message-runtime, ${livox_dep}" \
-    "XGC2 FAST-LIO2 LiDAR-inertial odometry package"
-}
 
 build_faster_lio_debs() {
   build_ros_package_deb \
@@ -275,56 +255,6 @@ build_faster_lio_debs() {
     "XGC2 Faster-LIO LiDAR-inertial odometry package"
 }
 
-build_swarm_lio2_debs() {
-  build_ros_package_deb \
-    "${swarm_msgs_pkg}" \
-    "swarm_msgs" \
-    "ros-noetic-message-runtime, ros-noetic-std-msgs, ros-noetic-sensor-msgs, ros-noetic-geometry-msgs, ros-noetic-nav-msgs" \
-    "XGC2 Swarm-LIO2 message package"
-
-  build_ros_package_deb \
-    "${udp_pkg}" \
-    "udp_bridge" \
-    "${ros_base_depends}, ros-noetic-mavros-msgs, ros-noetic-roslib, ros-noetic-rosbag, ros-noetic-rosfmt, ${swarm_msgs_pkg} (= ${VERSION})" \
-    "XGC2 Swarm-LIO2 UDP bridge package"
-
-  build_ros_package_deb \
-    "${swarm_pkg}" \
-    "swarm_lio" \
-    "${lio_depends}, ros-noetic-message-runtime, ros-noetic-gtsam, libtbb2, ${livox_dep}, ${swarm_msgs_pkg} (= ${VERSION}), ${udp_pkg} (= ${VERSION})" \
-    "XGC2 Swarm-LIO2 cooperative LiDAR-inertial odometry package"
-}
-
-build_point_lio_debs() {
-  build_ros_package_deb \
-    "${point_lio_pkg}" \
-    "point_lio" \
-    "${lio_depends}, ros-noetic-message-runtime, libgoogle-glog0v5, ${livox_dep}" \
-    "XGC2 Point-LIO LiDAR-inertial odometry package"
-}
-
-build_lio_sam_debs() {
-  build_ros_package_deb \
-    "${lio_sam_pkg}" \
-    "lio_sam" \
-    "${ros_base_depends}, ros-noetic-visualization-msgs, ros-noetic-tf, ros-noetic-pcl-conversions, ${opencv_depends}, ${gtsam_depends}, ros-noetic-message-runtime" \
-    "XGC2 LIO-SAM LiDAR-inertial smoothing and mapping package"
-}
-
-build_voxel_slam_debs() {
-  build_ros_package_deb \
-    "${voxel_slam_pkg}" \
-    "voxel_slam" \
-    "${lio_depends}, ros-noetic-rosbag, ros-noetic-visualization-msgs, ${gtsam_depends}, ${livox_dep}" \
-    "XGC2 Voxel-SLAM LiDAR mapping package"
-
-  build_ros_package_deb \
-    "${voxelslam_pointcloud2_pkg}" \
-    "voxelslam_pointcloud2" \
-    "${rviz_plugin_depends}" \
-    "XGC2 Voxel-SLAM RViz point cloud plugin package"
-}
-
 build_meta_deb() {
   meta_root="${BUILD_DIR}/${meta_pkg}"
   rm -rf "${meta_root}"
@@ -332,38 +262,17 @@ build_meta_deb() {
   write_control \
     "${meta_root}" \
     "${meta_pkg}" \
-    "${fast_pkg} (>= 1.1.0-11), ${faster_pkg} (>= 1.1.0-11), ${swarm_pkg} (>= 1.1.0-11), ${point_lio_pkg} (>= 1.1.0-11), ${lio_sam_pkg} (>= 1.1.0-11), ${voxel_slam_pkg} (>= 1.1.0-11), ${voxelslam_pointcloud2_pkg} (>= 1.1.0-11)" \
-    "XGC2 ROS1 SLAM package set"
+    "${faster_pkg} (>= ${VERSION})" \
+    "XGC2 ROS1 SLAM package set (Faster-LIO)"
   fakeroot dpkg-deb --build "${meta_root}" "${OUTPUT_DIR}/${meta_pkg}_${VERSION}_${ARCH}.deb" >/dev/null
 }
 
 case "${PACKAGE_GROUP}" in
-  all)
-    build_fast_lio2_debs
+  all|faster-lio)
     build_faster_lio_debs
-    build_swarm_lio2_debs
-    build_point_lio_debs
-    build_lio_sam_debs
-    build_voxel_slam_debs
-    build_meta_deb
-    ;;
-  fast-lio2)
-    build_fast_lio2_debs
-    ;;
-  faster-lio)
-    build_faster_lio_debs
-    ;;
-  swarm-lio2)
-    build_swarm_lio2_debs
-    ;;
-  point-lio)
-    build_point_lio_debs
-    ;;
-  lio-sam)
-    build_lio_sam_debs
-    ;;
-  voxel-slam)
-    build_voxel_slam_debs
+    if [[ "${PACKAGE_GROUP}" == "all" ]]; then
+      build_meta_deb
+    fi
     ;;
   meta)
     build_meta_deb

@@ -1,8 +1,7 @@
 name: ci
 
-# This tree is only an aggregator. Do not CI every vendored algorithm here.
-# Each algorithm repo under XGC-Team owns its own CI. The release workflow
-# stays for already-published Debian artifacts.
+# This tree only aggregates the maintained Faster-LIO checkout.
+# Unmaintained upstream forks live under external/ and are not CI'd here.
 
 on:
   workflow_dispatch:
@@ -13,5 +12,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "xgc2-slam no longer builds the full algorithm matrix."
-          echo "Run CI on the individual XGC-Team algorithm repository."
+          echo "xgc2-slam does not build a multi-algorithm matrix."
+          echo "Run CI on XGC-Team/xgc2-faster-lio."

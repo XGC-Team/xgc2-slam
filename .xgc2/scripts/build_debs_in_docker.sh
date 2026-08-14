@@ -119,26 +119,8 @@ docker run --rm \
       ros-noetic-visualization-msgs
     )
     case "${PACKAGE_GROUP}" in
-      all)
-        apt_packages+=(libgflags-dev libgoogle-glog-dev libopencv-dev libtbb-dev libyaml-cpp-dev qtbase5-dev ros-noetic-cv-bridge ros-noetic-gtsam ros-noetic-livox-ros-driver ros-noetic-rviz)
-        ;;
-      fast-lio2)
-        apt_packages+=(ros-noetic-livox-ros-driver)
-        ;;
-      faster-lio)
+      all|faster-lio)
         apt_packages+=(libgflags-dev libgoogle-glog-dev libtbb-dev libyaml-cpp-dev)
-        ;;
-      point-lio)
-        apt_packages+=(libgoogle-glog-dev ros-noetic-livox-ros-driver)
-        ;;
-      swarm-lio2)
-        apt_packages+=(ros-noetic-gtsam ros-noetic-livox-ros-driver)
-        ;;
-      lio-sam)
-        apt_packages+=(libopencv-dev ros-noetic-cv-bridge ros-noetic-gtsam)
-        ;;
-      voxel-slam)
-        apt_packages+=(qtbase5-dev ros-noetic-gtsam ros-noetic-livox-ros-driver ros-noetic-rviz)
         ;;
     esac
     apt-get install -y --no-install-recommends "${apt_packages[@]}"
@@ -146,37 +128,8 @@ docker run --rm \
     rm -rf /workspace/work/src /workspace/work/build /workspace/work/devel /workspace/work/install-root
     mkdir -p /workspace/work/src
     case "${PACKAGE_GROUP}" in
-      all)
-        rsync -a --delete /workspace/slam/fast_lio/ /workspace/work/src/fast_lio/
+      all|faster-lio)
         rsync -a --delete /workspace/slam/faster_lio/ /workspace/work/src/faster_lio/
-        rsync -a --delete /workspace/slam/swarm_lio2/swarm_msgs/ /workspace/work/src/swarm_msgs/
-        rsync -a --delete /workspace/slam/swarm_lio2/udp_bridge/ /workspace/work/src/udp_bridge/
-        rsync -a --delete /workspace/slam/swarm_lio2/swarm_lio/ /workspace/work/src/swarm_lio/
-        rsync -a --delete /workspace/slam/point_lio/ /workspace/work/src/point_lio/
-        rsync -a --delete /workspace/slam/lio_sam/ /workspace/work/src/lio_sam/
-        rsync -a --delete /workspace/slam/voxel_slam/voxel_slam/ /workspace/work/src/voxel_slam/
-        rsync -a --delete /workspace/slam/voxel_slam/voxelslam_pointcloud2/ /workspace/work/src/voxelslam_pointcloud2/
-        ;;
-      fast-lio2)
-        rsync -a --delete /workspace/slam/fast_lio/ /workspace/work/src/fast_lio/
-        ;;
-      faster-lio)
-        rsync -a --delete /workspace/slam/faster_lio/ /workspace/work/src/faster_lio/
-        ;;
-      swarm-lio2)
-        rsync -a --delete /workspace/slam/swarm_lio2/swarm_msgs/ /workspace/work/src/swarm_msgs/
-        rsync -a --delete /workspace/slam/swarm_lio2/udp_bridge/ /workspace/work/src/udp_bridge/
-        rsync -a --delete /workspace/slam/swarm_lio2/swarm_lio/ /workspace/work/src/swarm_lio/
-        ;;
-      point-lio)
-        rsync -a --delete /workspace/slam/point_lio/ /workspace/work/src/point_lio/
-        ;;
-      lio-sam)
-        rsync -a --delete /workspace/slam/lio_sam/ /workspace/work/src/lio_sam/
-        ;;
-      voxel-slam)
-        rsync -a --delete /workspace/slam/voxel_slam/voxel_slam/ /workspace/work/src/voxel_slam/
-        rsync -a --delete /workspace/slam/voxel_slam/voxelslam_pointcloud2/ /workspace/work/src/voxelslam_pointcloud2/
         ;;
       *)
         echo "unknown package group: ${PACKAGE_GROUP}" >&2
