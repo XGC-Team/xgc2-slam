@@ -5,7 +5,7 @@ Private ROS1 Noetic SLAM package repository for XGC2.
 ## Packages
 
 - `fast_lio`: FAST-LIO2 ROS package. The Deb artifact is named `ros-noetic-xgc2-fast-lio2`.
-- `faster_lio`: Faster-LIO ROS package, synced from the `lxk36/faster-lio` fork. The Deb artifact is named `ros-noetic-xgc2-faster-lio`.
+- `faster_lio`: Faster-LIO ROS package, synced from the `XGC-Team/xgc2-faster-lio` fork. The Deb artifact is named `ros-noetic-xgc2-faster-lio`.
 - `swarm_lio`: Swarm-LIO2 ROS package. The Deb artifact is named `ros-noetic-xgc2-swarm-lio2`.
 - `point_lio`: Point-LIO ROS package. The Deb artifact is named `ros-noetic-xgc2-point-lio`.
 - `lio_sam`: LIO-SAM ROS package. The Deb artifact is named `ros-noetic-xgc2-lio-sam`.

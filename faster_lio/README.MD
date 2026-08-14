@@ -1,8 +1,8 @@
 ## FasterLIO
 
 XGC2 development fork of [gaoxiang12/faster-lio](https://github.com/gaoxiang12/faster-lio).
-Secondary development lives here (`lxk36/faster-lio`). The ROS1 product copy is
-`products/ros1/perception/slam/faster_lio` in `lxk36/xgc2-slam`.
+Secondary development lives here (`XGC-Team/xgc2-faster-lio`). The ROS1 product copy is
+`products/ros1/perception/slam/faster_lio` in `xgc2-slam`.
 
 Scout Mini + RSHELIOS 16 launch:
 
