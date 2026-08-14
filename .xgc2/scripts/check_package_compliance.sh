@@ -15,6 +15,8 @@ required_files=(
   "README.md"
   "fast_lio/CMakeLists.txt"
   "fast_lio/package.xml"
+  "faster_lio/CMakeLists.txt"
+  "faster_lio/package.xml"
   "swarm_lio2/swarm_msgs/CMakeLists.txt"
   "swarm_lio2/swarm_msgs/package.xml"
   "swarm_lio2/udp_bridge/CMakeLists.txt"
@@ -40,6 +42,7 @@ done
 
 grep -q "id: xgc2-slam" "${REPO_ROOT}/.xgc2/product.yml"
 grep -q "ros-noetic-xgc2-fast-lio2" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
+grep -q "ros-noetic-xgc2-faster-lio" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 grep -q "ros-noetic-xgc2-swarm-lio2" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 grep -q "ros-noetic-livox-ros-driver" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"
 grep -q "ros-noetic-xgc2-point-lio" "${REPO_ROOT}/.xgc2/scripts/package_debs.sh"

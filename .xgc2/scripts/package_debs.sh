@@ -139,7 +139,7 @@ message_headers_for_package() {
   local ros_pkg="$1"
 
   case "${ros_pkg}" in
-    fast_lio)
+    fast_lio|faster_lio)
       printf '%s\n' Pose6D.h
       ;;
     point_lio)
@@ -243,6 +243,7 @@ build_ros_package_deb() {
 
 livox_dep="ros-noetic-livox-ros-driver (>= 2.6.0-7)"
 fast_pkg="ros-noetic-xgc2-fast-lio2"
+faster_pkg="ros-noetic-xgc2-faster-lio"
 swarm_msgs_pkg="ros-noetic-xgc2-swarm-msgs"
 udp_pkg="ros-noetic-xgc2-udp-bridge"
 swarm_pkg="ros-noetic-xgc2-swarm-lio2"
@@ -264,6 +265,14 @@ build_fast_lio2_debs() {
     "fast_lio" \
     "${lio_depends}, ros-noetic-message-runtime, ${livox_dep}" \
     "XGC2 FAST-LIO2 LiDAR-inertial odometry package"
+}
+
+build_faster_lio_debs() {
+  build_ros_package_deb \
+    "${faster_pkg}" \
+    "faster_lio" \
+    "${lio_depends}, ros-noetic-message-runtime, libgoogle-glog0v5, libgflags2.2, libyaml-cpp0.6, libtbb2" \
+    "XGC2 Faster-LIO LiDAR-inertial odometry package"
 }
 
 build_swarm_lio2_debs() {
@@ -323,7 +332,7 @@ build_meta_deb() {
   write_control \
     "${meta_root}" \
     "${meta_pkg}" \
-    "${fast_pkg} (>= 1.1.0-10), ${swarm_pkg} (>= 1.1.0-10), ${point_lio_pkg} (>= 1.1.0-10), ${lio_sam_pkg} (>= 1.1.0-10), ${voxel_slam_pkg} (>= 1.1.0-10), ${voxelslam_pointcloud2_pkg} (>= 1.1.0-10)" \
+    "${fast_pkg} (>= 1.1.0-11), ${faster_pkg} (>= 1.1.0-11), ${swarm_pkg} (>= 1.1.0-11), ${point_lio_pkg} (>= 1.1.0-11), ${lio_sam_pkg} (>= 1.1.0-11), ${voxel_slam_pkg} (>= 1.1.0-11), ${voxelslam_pointcloud2_pkg} (>= 1.1.0-11)" \
     "XGC2 ROS1 SLAM package set"
   fakeroot dpkg-deb --build "${meta_root}" "${OUTPUT_DIR}/${meta_pkg}_${VERSION}_${ARCH}.deb" >/dev/null
 }
@@ -331,6 +340,7 @@ build_meta_deb() {
 case "${PACKAGE_GROUP}" in
   all)
     build_fast_lio2_debs
+    build_faster_lio_debs
     build_swarm_lio2_debs
     build_point_lio_debs
     build_lio_sam_debs
@@ -339,6 +349,9 @@ case "${PACKAGE_GROUP}" in
     ;;
   fast-lio2)
     build_fast_lio2_debs
+    ;;
+  faster-lio)
+    build_faster_lio_debs
     ;;
   swarm-lio2)
     build_swarm_lio2_debs

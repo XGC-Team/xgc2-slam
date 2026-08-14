@@ -120,10 +120,13 @@ docker run --rm \
     )
     case "${PACKAGE_GROUP}" in
       all)
-        apt_packages+=(libgoogle-glog-dev libopencv-dev qtbase5-dev ros-noetic-cv-bridge ros-noetic-gtsam ros-noetic-livox-ros-driver ros-noetic-rviz)
+        apt_packages+=(libgflags-dev libgoogle-glog-dev libopencv-dev libtbb-dev libyaml-cpp-dev qtbase5-dev ros-noetic-cv-bridge ros-noetic-gtsam ros-noetic-livox-ros-driver ros-noetic-rviz)
         ;;
       fast-lio2)
         apt_packages+=(ros-noetic-livox-ros-driver)
+        ;;
+      faster-lio)
+        apt_packages+=(libgflags-dev libgoogle-glog-dev libtbb-dev libyaml-cpp-dev)
         ;;
       point-lio)
         apt_packages+=(libgoogle-glog-dev ros-noetic-livox-ros-driver)
@@ -145,6 +148,7 @@ docker run --rm \
     case "${PACKAGE_GROUP}" in
       all)
         rsync -a --delete /workspace/slam/fast_lio/ /workspace/work/src/fast_lio/
+        rsync -a --delete /workspace/slam/faster_lio/ /workspace/work/src/faster_lio/
         rsync -a --delete /workspace/slam/swarm_lio2/swarm_msgs/ /workspace/work/src/swarm_msgs/
         rsync -a --delete /workspace/slam/swarm_lio2/udp_bridge/ /workspace/work/src/udp_bridge/
         rsync -a --delete /workspace/slam/swarm_lio2/swarm_lio/ /workspace/work/src/swarm_lio/
@@ -155,6 +159,9 @@ docker run --rm \
         ;;
       fast-lio2)
         rsync -a --delete /workspace/slam/fast_lio/ /workspace/work/src/fast_lio/
+        ;;
+      faster-lio)
+        rsync -a --delete /workspace/slam/faster_lio/ /workspace/work/src/faster_lio/
         ;;
       swarm-lio2)
         rsync -a --delete /workspace/slam/swarm_lio2/swarm_msgs/ /workspace/work/src/swarm_msgs/

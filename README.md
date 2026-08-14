@@ -5,6 +5,7 @@ Private ROS1 Noetic SLAM package repository for XGC2.
 ## Packages
 
 - `fast_lio`: FAST-LIO2 ROS package. The Deb artifact is named `ros-noetic-xgc2-fast-lio2`.
+- `faster_lio`: Faster-LIO ROS package, synced from the `lxk36/faster-lio` fork. The Deb artifact is named `ros-noetic-xgc2-faster-lio`.
 - `swarm_lio`: Swarm-LIO2 ROS package. The Deb artifact is named `ros-noetic-xgc2-swarm-lio2`.
 - `point_lio`: Point-LIO ROS package. The Deb artifact is named `ros-noetic-xgc2-point-lio`.
 - `lio_sam`: LIO-SAM ROS package. The Deb artifact is named `ros-noetic-xgc2-lio-sam`.
@@ -21,13 +22,14 @@ sudo apt update
 sudo apt install ros-noetic-xgc2-slam
 ```
 
-The `ros-noetic-xgc2-slam` meta package pulls in FAST-LIO2, Swarm-LIO2, Point-LIO, LIO-SAM, Voxel-SLAM, the Voxel-SLAM RViz plugin, and their support packages.
+The `ros-noetic-xgc2-slam` meta package pulls in FAST-LIO2, Faster-LIO, Swarm-LIO2, Point-LIO, LIO-SAM, Voxel-SLAM, the Voxel-SLAM RViz plugin, and their support packages.
 
 ## Smoke Test
 
 ```bash
 source /opt/ros/noetic/setup.bash
 rospack find fast_lio
+rospack find faster_lio
 rospack find swarm_lio
 rospack find point_lio
 rospack find lio_sam

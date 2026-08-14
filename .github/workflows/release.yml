@@ -163,6 +163,12 @@ jobs:
           - package-group: fast-lio2
             arch: arm64
             runner: ubuntu-24.04-arm
+          - package-group: faster-lio
+            arch: amd64
+            runner: ubuntu-latest
+          - package-group: faster-lio
+            arch: arm64
+            runner: ubuntu-24.04-arm
           - package-group: swarm-lio2
             arch: amd64
             runner: ubuntu-latest

@@ -6,6 +6,7 @@ source "/opt/ros/${ROS_DISTRO}/setup.bash"
 
 dpkg -s ros-noetic-xgc2-slam >/dev/null
 dpkg -s ros-noetic-xgc2-fast-lio2 >/dev/null
+dpkg -s ros-noetic-xgc2-faster-lio >/dev/null
 dpkg -s ros-noetic-xgc2-swarm-lio2 >/dev/null
 dpkg -s ros-noetic-livox-ros-driver >/dev/null
 dpkg -s ros-noetic-xgc2-swarm-msgs >/dev/null
@@ -16,6 +17,7 @@ dpkg -s ros-noetic-xgc2-voxel-slam >/dev/null
 dpkg -s ros-noetic-xgc2-voxelslam-pointcloud2 >/dev/null
 
 test "$(rospack find fast_lio)" = "/opt/ros/${ROS_DISTRO}/share/fast_lio"
+test "$(rospack find faster_lio)" = "/opt/ros/${ROS_DISTRO}/share/faster_lio"
 test "$(rospack find swarm_lio)" = "/opt/ros/${ROS_DISTRO}/share/swarm_lio"
 test "$(rospack find livox_ros_driver)" = "/opt/ros/${ROS_DISTRO}/share/livox_ros_driver"
 test "$(rospack find swarm_msgs)" = "/opt/ros/${ROS_DISTRO}/share/swarm_msgs"
@@ -26,6 +28,7 @@ test "$(rospack find voxel_slam)" = "/opt/ros/${ROS_DISTRO}/share/voxel_slam"
 test "$(rospack find voxelslam_pointcloud2)" = "/opt/ros/${ROS_DISTRO}/share/voxelslam_pointcloud2"
 
 test -x "/opt/ros/${ROS_DISTRO}/lib/fast_lio/fastlio_mapping"
+test -x "/opt/ros/${ROS_DISTRO}/lib/faster_lio/run_mapping_online"
 test -x "/opt/ros/${ROS_DISTRO}/lib/swarm_lio/swarm_lio"
 test -x "/opt/ros/${ROS_DISTRO}/lib/livox_ros_driver/livox_ros_driver_node"
 test -x "/opt/ros/${ROS_DISTRO}/lib/udp_bridge/udp_online"
@@ -36,6 +39,7 @@ test -x "/opt/ros/${ROS_DISTRO}/lib/lio_sam/lio_sam_mapOptmization"
 test -x "/opt/ros/${ROS_DISTRO}/lib/lio_sam/lio_sam_imuPreintegration"
 test -x "/opt/ros/${ROS_DISTRO}/lib/voxel_slam/voxelslam"
 
+test -f "/opt/ros/${ROS_DISTRO}/share/faster_lio/config/scout_helios16.yaml"
 test -f "/opt/ros/${ROS_DISTRO}/share/point_lio/config/avia.yaml"
 test -f "/opt/ros/${ROS_DISTRO}/share/lio_sam/config/params.yaml"
 test -f "/opt/ros/${ROS_DISTRO}/share/voxel_slam/config/velodyne.yaml"
@@ -53,6 +57,7 @@ while IFS= read -r file; do
   fi
 done < <(find \
   "/opt/ros/${ROS_DISTRO}/lib/fast_lio" \
+  "/opt/ros/${ROS_DISTRO}/lib/faster_lio" \
   "/opt/ros/${ROS_DISTRO}/lib/swarm_lio" \
   "/opt/ros/${ROS_DISTRO}/lib/livox_ros_driver" \
   "/opt/ros/${ROS_DISTRO}/lib/udp_bridge" \
