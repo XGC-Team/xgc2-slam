@@ -1,7 +1,7 @@
 name: ci
 
 # This tree only aggregates the maintained Faster-LIO checkout.
-# Unmaintained upstream forks live under external/ and are not CI'd here.
+# Unmaintained upstream forks live under temp/ and are not CI'd here.
 
 on:
   workflow_dispatch:
