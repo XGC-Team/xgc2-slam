@@ -1,8 +1,9 @@
 # XGC2 Scout Mini + RoboSense RSHELIOS 16 + serial AHRS.
-# Bag topics: /rslidar_points (organized 16x1800, xyz+intensity only),
-#             /imu/data_raw (200 Hz).
-# The official ROBOSENSE path expects ring+timestamp fields this driver
-# does not publish. First follow-up is an organized-cloud handler.
+# Future live data: compile rslidar_sdk with POINT_TYPE=XYZIRT (vendor README
+# §1.2) so /rslidar_points carries official ring and packet timestamps.
+# Existing XYZI bags: rewrite ring from the organized row (vendor row-major
+# layout). Do not invent hardware timestamps; Faster-LIO then uses the
+# published yaw undistortion that runs when point time is 0.
 common:
   lid_topic: "/rslidar_points"
   imu_topic: "/imu/data_raw"
