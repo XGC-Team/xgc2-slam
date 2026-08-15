@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-DOCKER_IMAGE="${DOCKER_IMAGE:-ros:noetic-ros-base-focal}"
+DOCKER_IMAGE="${DOCKER_IMAGE:-ghcr.io/xgc-team/xgc2-images/xgc2-build-focal-full-noetic:1.0.0}"
 WORK_DIR="${WORK_DIR:-${REPO_ROOT}/.work/docker}"
 OUTPUT_DIR="${OUTPUT_DIR:-${REPO_ROOT}/debs}"
 INSTALL_CHECK="${INSTALL_CHECK:-true}"
@@ -70,7 +70,7 @@ docker run --rm \
 
     export DEBIAN_FRONTEND=noninteractive
     apt_update_retry
-    apt-get install -y --no-install-recommends ca-certificates curl
+
     install -m 0755 -d /etc/apt/keyrings
     curl -fsSL https://xgc2.apt.xiaokang.ink/xgc2-archive-keyring.gpg \
       -o /etc/apt/keyrings/xgc2-archive-keyring.gpg
@@ -85,45 +85,7 @@ docker run --rm \
       fi
     apt_update_retry
 
-    apt_packages=(
-      build-essential \
-      ca-certificates \
-      cmake \
-      curl \
-      dpkg-dev \
-      fakeroot \
-      file \
-      git \
-      libapr1-dev \
-      libeigen3-dev \
-      libtbb-dev \
-      python3-dev \
-      rsync \
-      ros-noetic-eigen-conversions \
-      ros-noetic-geometry-msgs \
-      ros-noetic-mavros-msgs \
-      ros-noetic-message-generation \
-      ros-noetic-message-runtime \
-      ros-noetic-nav-msgs \
-      ros-noetic-pcl-conversions \
-      ros-noetic-pcl-ros \
-      ros-noetic-rosbag \
-      ros-noetic-roscpp \
-      ros-noetic-rosfmt \
-      ros-noetic-roslib \
-      ros-noetic-rospack \
-      ros-noetic-rospy \
-      ros-noetic-sensor-msgs \
-      ros-noetic-std-msgs \
-      ros-noetic-tf \
-      ros-noetic-visualization-msgs
-    )
-    case "${PACKAGE_GROUP}" in
-      all|faster-lio)
-        apt_packages+=(libgflags-dev libgoogle-glog-dev libtbb-dev libyaml-cpp-dev)
-        ;;
-    esac
-    apt-get install -y --no-install-recommends "${apt_packages[@]}"
+
 
     rm -rf /workspace/work/src /workspace/work/build /workspace/work/devel /workspace/work/install-root
     mkdir -p /workspace/work/src

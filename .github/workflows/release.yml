@@ -215,13 +215,9 @@ jobs:
     name: Build SLAM meta packages
     needs: deb-build
     runs-on: ubuntu-latest
+    container: ghcr.io/xgc-team/xgc2-images/xgc2-build-focal-dev:1.0.0
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install meta package dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends fakeroot
 
       - name: Build meta deb packages
         env:
