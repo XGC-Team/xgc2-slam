@@ -44,7 +44,6 @@ mkdir -p "${WORK_DIR}" "${OUTPUT_DIR}"
 docker pull "${DOCKER_IMAGE}"
 docker run --rm \
   -e XGC2_APT_OVERLAY_URL="${XGC2_APT_OVERLAY_URL:-}" \
-  --network host \
   -e DEBIAN_FRONTEND=noninteractive \
   -e INSTALL_CHECK="${INSTALL_CHECK}" \
   -e PACKAGE_GROUP="${PACKAGE_GROUP}" \
@@ -55,38 +54,7 @@ docker run --rm \
   bash -lc '
     set -euo pipefail
 
-    apt_update_retry() {
-      local attempt
-      for attempt in 1 2 3 4; do
-        rm -rf /var/lib/apt/lists/*
-        if apt-get update; then
-          return 0
-        fi
-        sleep "$((attempt * 10))"
-      done
-      rm -rf /var/lib/apt/lists/*
-      apt-get update
-    }
-
     export DEBIAN_FRONTEND=noninteractive
-    apt_update_retry
-
-    install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://xgc2.apt.xiaokang.ink/xgc2-archive-keyring.gpg \
-      -o /etc/apt/keyrings/xgc2-archive-keyring.gpg
-    chmod 0644 /etc/apt/keyrings/xgc2-archive-keyring.gpg
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/xgc2-archive-keyring.gpg] https://xgc2.apt.xiaokang.ink focal main" \
-      > /etc/apt/sources.list.d/xgc2.list
-
-      if [[ -n "${XGC2_APT_OVERLAY_URL:-}" ]]; then
-        sed "s#${XGC2_APT_BASE_URL:-https://xgc2.apt.xiaokang.ink}#${XGC2_APT_OVERLAY_URL%/}#g" \
-          /etc/apt/sources.list.d/xgc2.list \
-          > /etc/apt/sources.list.d/00-xgc2-release-train.list
-      fi
-    apt_update_retry
-
-
-
     rm -rf /workspace/work/src /workspace/work/build /workspace/work/devel /workspace/work/install-root
     mkdir -p /workspace/work/src
     case "${PACKAGE_GROUP}" in
