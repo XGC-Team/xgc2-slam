@@ -109,40 +109,6 @@ jobs:
           git diff --check HEAD
           .xgc2/scripts/check_package_compliance.sh
 
-  cpp-quality:
-    name: C++ quality
-    if: ${{ inputs.run_cpp_quality }}
-    needs: validate-release-inputs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-          submodules: true
-
-      - name: Run lightweight C++ quality checks
-        run: git diff --check HEAD
-
-  source-tests:
-    name: Source package checks
-    needs: validate-release-inputs
-    runs-on: ubuntu-latest
-    steps:
-      - name: Skip source package checks
-        if: ${{ !inputs.run_source_tests }}
-        run: echo "Source package checks disabled by input"
-
-      - uses: actions/checkout@v4
-        if: inputs.run_source_tests
-        with:
-          fetch-depth: 2
-
-      - name: Run source package checks
-        if: inputs.run_source_tests
-        run: |
-          git diff --check HEAD
-          .xgc2/scripts/check_package_compliance.sh
-
   deb-build:
     name: Build ${{ matrix.package-group }} (${{ matrix.arch }})
     needs: validate-release-inputs
